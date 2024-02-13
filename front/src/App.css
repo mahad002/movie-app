@@ -1,4 +1,4 @@
-/* #root {
+#root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,10 +39,9 @@
 
 .read-the-docs {
   color: #888;
-} */
+}
 
-.App {
-  background-color: #242424;
-  color: white;
-  font-family: sans-serif;
+.App{
+  /* text-align: center; */
+  /* background-color: #61dafbaa; */
 }
