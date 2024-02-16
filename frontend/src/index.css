@@ -4,5 +4,6 @@
 }
 
 html, body, #root, .App {
+  background-color: #242424;
   min-height: 100%;
 }

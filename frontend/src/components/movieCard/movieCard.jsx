@@ -14,26 +14,26 @@ const Cards = ({movie}) => {
 
   return (
     <>
-      {isLoading ? (
-        <div className="cards">
+      {isLoading || !movie? (
+        <div className="movieCard">
           <SkeletonTheme color="#202020" highlightColor="#444">
             <Skeleton height={300} duration={2} />
           </SkeletonTheme>
         </div>
       ) : (
         <Link to={`/movie/${movie?.id}`} style={{ textDecoration: 'none', color: 'white' }}>
-          <div className="cards">
-            <img className="cards__img" src={`https://image.tmdb.org/t/p/original${movie?.poster_path}`} alt={movie?.original_title} />
-            <div className="cards__overlay">
-              <div className="card__title">{movie?.original_title}</div>
-              <div className="card__runtime">
+          <div className="movieCard">
+            <img className="movieCard__img" src={`https://image.tmdb.org/t/p/original${movie?.poster_path}`} alt={movie?.original_title} />
+            <div className="movieCard__overlay">
+              <div className="movieCard__title">{movie?.original_title}</div>
+              <div className="movieCard__runtime">
                 {movie?.release_date}
-                <span className="card__rating">
-                  {movie?.vote_average}
+                <span className="movieCard__rating">
+                  {parseFloat(movie?.vote_average.toFixed(1))}
                   <i className="fas fa-star" />
                 </span>
               </div>
-              <div className="card__description">{movie?.overview?.slice(0, 118) + '...'}</div>
+              <div className="movieCard__description">{movie?.overview?.slice(0, 118) + '...'}</div>
             </div>
           </div>
         </Link>

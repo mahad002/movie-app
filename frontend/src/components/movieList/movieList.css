@@ -1,0 +1,39 @@
+.movieList {
+    padding: 0 3rem 3rem 3rem;
+}
+
+.title {
+    font-size: 1.75rem;
+    margin:  2.5rem;
+}
+
+.list {
+    display: flex;
+    flex-wrap: wrap ;
+    justify-content: center;
+}
+
+.movieCard   {
+    display: inline-block;
+    transition: transform .2s;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0.19rem;
+    cursor:pointer;
+    /* min-width:200px;
+    height:300px; */
+    z-index:0;
+    border: 1px solid rgb(99, 99, 99);
+}
+
+@media (max-width: 768px) {
+    .movieList {
+        padding: 0 1rem 1rem 1rem;
+    }
+
+    .title {
+        font-size: 1.2rem;
+        margin:  1.5rem 1rem;
+    }
+}

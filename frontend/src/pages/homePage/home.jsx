@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import Cards from '../../components/movieCard/movieCard';
+import MovieList from '../../components/movieList/movieList';
 // import Cards from '../../components/movieCard/movieCard';
 
 const tmdb_api_key = import.meta.env.VITE_TMDB_API_KEY;  // Use VITE_ prefix
@@ -61,44 +62,42 @@ const Home = () => {
                 <Carousel
                     showThumbs={false}
                     autoPlay={true}
-                    transitionTime={4}
+                    transitionTime={2}
                     infiniteLoop={true}
                     showStatus={false}
                 >
                     {popularMovies.map(movie => (
                         <>
-                            <Link style={{textDecoration:"none", color:"white"}} to ={`/movie/${movie.id}`}>
-                                <div key={movie.id} className='movie-img'>
-                                    {/* <span>{movie.original_title}</span> */}
-                                    {/* <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} /> */}
-                                    <img src={`https://image.tmdb.org/t/p/original${movie && movie.backdrop_path}`} alt={movie.title} />
-                                    {/* <p className='legend'>{movie.title}</p> */}
+                        <Link style={{ textDecoration: "none", color: "white" }} to={`/movie/${movie.id}`}>
+                            <div key={movie.id} className='movie-img'>
+                                <img src={`https://image.tmdb.org/t/p/original${movie && movie.backdrop_path}`} alt={movie.title} />
+                            </div>
+                            <div className='overlay'>
+                                <div className='movie-img-title'>
+                                    {movie ? movie.original_title : ""}
                                 </div>
-                                <div className='overlay'>
-                                    <div className='movie-img-title'>
-                                        {movie ? movie.original_title: ""}
-                                    </div>
-                                    <div className='movie-img-runtime'>
-                                        {movie ? movie.release_date: ""}
-                                        <span className='movie-img-rating'>
-                                            {movie ? movie.vote_average : ""}
-                                            <FontAwesomeIcon icon={faStar} />{" "}
-                                        </span>
-                                    </div>
-                                    <div className='movie-img-description'>
-                                        {/* <p>{movie.overview}</p> */}
-                                        {movie ? movie.overview: ""}
-                                    </div>
+                                <div className='movie-img-runtime'>
+                                    {movie ? movie.release_date : ""}
+                                    <span className='movie-img-rating'>
+                                        {movie ? parseFloat(movie.vote_average.toFixed(1)) : ""}
+                                        <FontAwesomeIcon icon={faStar} />{" "}
+                                    </span>
                                 </div>
-                            </Link>
-                        </>
+                                <div className='movie-img-description'>
+                                    {movie ? movie.overview : ""}
+                                </div>
+                            </div>
+                        </Link>
+                    </>                    
                     ))}
                 </Carousel>
                 <div>
-                    <h2>Popular Movies</h2>
                     <div className='home-movies'>
-                        {popularMovies.map((movie) => (
-                            <Cards key={movie.id} movie={movie}/>
+                        <MovieList id={'popular'}/>
+                        <MovieList id={'top_rated'}/>
+                        <MovieList id={'upcoming'}/>
+                        {/* {popularMovies.map((movie) => (
+                                <Cards key={movie.id} movie={movie}/>
                             // <div className='movie' key={movie.id}>
                             //     <div className='movie-img'>
                             //         <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
@@ -114,7 +113,7 @@ const Home = () => {
                             //         </div>
                             //     </div>
                             // </div>
-                        ))}
+                        ))} */}
                     </div>
                 </div>
             </div>
