@@ -1,12 +1,18 @@
-const express = require ('express')
-const app = express()
-const mongoose = require('mongoose')
-const cors = require('cors')
+const express = require('express');
+const mongoose = require('mongoose');
+const UserRoutes = require('./routes/user');
+const MovieRoutes = require('./routes/movie');
+const cors = require('cors');
+require('dotenv').config();
+
 // Connect to the database
-const url = `mongodb+srv://mahadsheikh:mahadsheikh@cluster.qhe82rf.mongodb.net/?retryWrites=true&w=majority`;
+const url = process.env.MONGODB_URI;
 
 const connectionParams={}
 
+const app = express();
+
+// console.log(url);
 mongoose.connect(url,connectionParams)
     .then( () => {
         console.log('Connected to the database ')
@@ -14,9 +20,12 @@ mongoose.connect(url,connectionParams)
     .catch( (err) => {
         console.error(`Error connecting to the database. ${err}`);
     })
-    
-app.use(cors())
 
-app.listen(3001, () => {
-    console.log('Server is running...')
-})
+app.use(express.json());
+app.use(cors());
+
+
+app.use('/user', UserRoutes);
+// app.use('/movie', MovieRoutes);
+
+app.listen(5000, () => console.log('Server running on port 5000'));

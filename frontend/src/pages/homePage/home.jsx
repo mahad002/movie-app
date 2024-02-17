@@ -5,7 +5,6 @@ import './home.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
-import Cards from '../../components/movieCard/movieCard';
 import MovieList from '../../components/movieList/movieList';
 // import Cards from '../../components/movieCard/movieCard';
 

@@ -3,6 +3,7 @@ import './App.css'
 import Header from "./components/navbar/header";
 import Home from "./pages/homePage/home";
 import MovieList from "./components/movieList/movieList";
+import Movie from "./pages/moviePage/movie";
 
 function App() {
 
@@ -14,7 +15,7 @@ function App() {
           <Routes>
             <Route index element={<h1><Home/></h1>} />
             <Route path="movies/:type" element={<MovieList/>} />
-            <Route path="movie/:id" element={<h1>Movie Detail</h1>} />
+            <Route path="movie/:id" element={<Movie/>} />
             <Route path="/*" element={<h1>Error 404 Page not available!</h1>} />
           </Routes>
         </Router>
