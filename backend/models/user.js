@@ -1,12 +1,55 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
-    name: String,
-    email: String,
-    password: String,
-    token: { type: String, required: false},
-    picture: {type: Array, required: false}
-}); 
+const userSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function (value) {
+                return /[!@#$%^&*(),.?":{}|<>]/.test(value);
+            },
+            message: props => `${props.value} must contain at least one special character.`,
+        },
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    reviews: [{
+        movieId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie',
+            required: true,
+        },
+        rating: {
+            type: Number,
+            min: 1,
+            max: 10,
+            required: true,
+        },
+        comment: {
+            type: String,
+        },
+    }],
+    usernameChangeCount: {
+        type: Number,
+        default: 0,
+    },
+    lastUsernameChange: {
+        type: Date,
+    },
+});
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;

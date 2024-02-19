@@ -102,7 +102,7 @@ const movieSchema = new mongoose.Schema({
         type: String,
     },
     review: {
-        type: String,
+        type: [String],
     },
 });
 

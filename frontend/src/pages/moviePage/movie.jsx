@@ -3,22 +3,40 @@ import "./movie.css"
 import { useParams } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
-const tmdb_api_key = import.meta.env.VITE_TMDB_API_KEY;  
+// const tmdb_api_key = import.meta.env.VITE_TMDB_API_KEY;  
+const base_url = import.meta.env.VITE_BASE_URL;
 
 const Movie = () => {
-    const [currentMovieDetail, setMovie] = useState()
-    const { id } = useParams()
+    const [currentMovieDetail, setMovie] = useState();
+    const { id } = useParams();
+    const [trailer, setTrailer] = useState();
 
     useEffect(() => {
-        getData()
-        window.scrollTo(0,0)
+        getData();
+        getTrailer();
+        window.scrollTo(0,0);
     }, [])
 
     const getData = () => {
-        fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${tmdb_api_key}&language=en-US`)
-        .then(res => res.json())
-        .then(data => setMovie(data))
+        axios.get(`${base_url}/movie/${id}`)
+            .then(res => {
+                setMovie(res.data.movie);
+                // console.log(currentMovieDetail);
+            })
+            .catch(error => {
+                console.message(error);
+            });
+    }
+
+    const getTrailer = () => {
+        axios.get(`${base_url}/movie/trailer/${id}`)
+             .then((response) => response.data)
+             .then((data) => {
+                    setTrailer(data);
+                    // console.log(data);
+                })
     }
 
     return (
@@ -62,12 +80,24 @@ const Movie = () => {
                 </div>
             </div>
             <div className="movie__links">
-                <div className="movie__heading">Useful Links</div>
+                <div className="movie__heading">Trailer & <br></br>Information</div>
                 {
-                    currentMovieDetail && currentMovieDetail.homepage && <a href={currentMovieDetail.homepage} target="_blank" style={{textDecoration: "none"}}><p><span className="movie__homeButton movie__Button">Homepage   </span></p></a>
+                    trailer && <iframe className="yt_vid" width="640" height="360" src={`${trailer.yt_trailer_vid}`}/>
                 }
-                {
-                    currentMovieDetail && currentMovieDetail.imdb_id && <a href={"https://www.imdb.com/title/" + currentMovieDetail.imdb_id} target="_blank" style={{textDecoration: "none"}}><p><span className="movie__imdbButton movie__Button">IMDb</span></p></a>
+                {<div className="movie_links">
+                    {
+                        currentMovieDetail && currentMovieDetail.homepage && <a href={currentMovieDetail.homepage} target="_blank" style={{textDecoration: "none"}}><p>
+                        <span className="movie__homeButton movie__Button">
+                            Watch Now
+                                {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-1 h-1">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                                </svg> */}
+                        </span></p></a>
+                    }
+                    {
+                        trailer && currentMovieDetail && currentMovieDetail.imdb_id && <a href={"https://www.imdb.com/title/" + currentMovieDetail.imdb_id} target="_blank" style={{textDecoration: "none"}}><p><span className="movie__imdbButton movie__Button">IMDb</span></p></a>
+                    }
+                </div>
                 }
             </div>
             <div className="movie__heading">Production companies</div>

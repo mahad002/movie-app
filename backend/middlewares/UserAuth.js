@@ -1,27 +1,28 @@
 const UserModel = require("../models/user");
 const jwt = require("jsonwebtoken");
+require('dotenv').config();
+
+const secret = process.env.SECRET;
 
 const UserAuth = async (req, res, next) => {
     try {
-        const token = req.header("Authorization");
-        console.log(token);
-        const decoded = jwt.verify(token, "secret");
-        console.log(decoded);
-        const user = await UserModel.findOne({ _id: decoded.id, name: decoded.name});
-        if(decoded.name != req.body.name){
-            console.log("Invalid User");
-            throw new Error();
-        }
-        console.log(user);
+        const token = req.header('Authorization').replace('Bearer ', '');
+
+        const decoded = jwt.verify(token, secret);
+
+        const user = await User.findOne({ _id: decoded.userId });
+
         if (!user) {
             throw new Error();
         }
-        req.user = user;
+
+        req.userId = user._id;
         req.token = token;
+
         next();
     } catch (error) {
-        console.log(error);
-        res.status(401).send({ error: "Not authorized to access this resource" });
+        console.error(error);
+        res.status(401).json({ error: 'Authentication failed.' });
     }
 };
 

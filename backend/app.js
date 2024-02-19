@@ -26,6 +26,6 @@ app.use(cors());
 
 
 app.use('/user', UserRoutes);
-// app.use('/movie', MovieRoutes);
+app.use('/movie', MovieRoutes);
 
 app.listen(5000, () => console.log('Server running on port 5000'));
