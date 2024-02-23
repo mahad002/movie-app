@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    role: {
+        type: String,
+        default: 'user', // 'user' or 'admin'
+    },
     reviews: [{
         movieId: {
             type: mongoose.Schema.Types.ObjectId,

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const UserRoutes = require('./routes/user');
 const MovieRoutes = require('./routes/movie');
+const TypeRoutes = require('./routes/type');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -27,5 +28,6 @@ app.use(cors());
 
 app.use('/user', UserRoutes);
 app.use('/movie', MovieRoutes);
+app.use('/type', TypeRoutes);
 
 app.listen(5000, () => console.log('Server running on port 5000'));

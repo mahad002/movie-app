@@ -23,6 +23,21 @@
     width: 100%;
 }
 
+.movieCarousel{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 100%;
+    height: 600px;
+    background-color: transparent;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: transform .3s;
+}
+
 .overlay {
     position: absolute;
     padding: 5rem;
@@ -72,6 +87,10 @@
     .movie-img {
       height: auto;
       /* object-fit: fill; */
+    }
+
+    .movieCarousel{
+      height: 200px;
     }
   
     .overlay {

@@ -119,7 +119,8 @@ router.post('/signup', async (req, res) => {
             username: req.body.username,
             password: hashedPassword,
             email: req.body.email,
-            name: req.body.name
+            name: req.body.name,
+            role: req.body.role,
         });
 
         await newUser.save();
@@ -131,7 +132,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // SignIn Route
-router.post('/signin', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const user = await User.findOne({ username: req.body.username });
 
@@ -227,6 +228,16 @@ router.post('/review/:movieId', UserAuth, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+// router.get('/authenticated', passport.authenticate('jwt', { session: false }), (req, res) => {
+//     const { username, role } = req.user;
+//     res.status(200).json({ isAuthenticated: true, user: { username, role } });
+// });
+
+// router.get('/logout', passport.authenticate('jwt', { session: false }), (req, res) => {
+//     res.clearCookie('access_token');
+//     res.status(200).json({ user: { username: "", role: "" }, success: true });
+// });
 
 
 module.exports = router;

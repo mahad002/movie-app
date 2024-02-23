@@ -73,16 +73,16 @@ const Movie = () => {
                         </div>
                     </div>
                     <div className="movie__detailRightBottom">
-                        <div className="synopsisText">Overview</div>
-                        <div>{currentMovieDetail ? currentMovieDetail.overview : ""}</div>
+                        <div className="synopsisText_Heading">Overview</div>
+                        <div className="synopsisText">{currentMovieDetail ? currentMovieDetail.overview : ""}</div>
                     </div>
                     
                 </div>
             </div>
             <div className="movie__links">
-                <div className="movie__heading">Trailer & <br></br>Information</div>
+                <div className="movie__heading">Trailer & <br/>Information</div>
                 {
-                    trailer && <iframe className="yt_vid" width="640" height="360" src={`${trailer.yt_trailer_vid}`}/>
+                    trailer && <iframe className="yt_vid" src={`${trailer.yt_trailer_vid}`}/>
                 }
                 {<div className="movie_links">
                     {
@@ -109,8 +109,8 @@ const Movie = () => {
                                 company.logo_path 
                                 && 
                                 <span className="productionCompanyImage">
-                                    <img className="movie__productionComapany" src={"https://image.tmdb.org/t/p/original" + company.logo_path} />
-                                    <span>{company.name}</span>
+                                    <img className="movie__productionCompany" src={"https://image.tmdb.org/t/p/original" + company.logo_path} />
+                                    <span className="movie__productionCompanyHeading">{company.name}</span>
                                 </span>
                             }
                         </>

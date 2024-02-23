@@ -10,6 +10,10 @@ const Header = () => {
                 <Link className='h-btn' to='/movies/top_rated' style={{textDecoration: 'none', color:'white'}}><span>Top Rated</span></Link>
                 <Link className='h-btn' to='/movies/upcoming' style={{textDecoration: 'none', color:'white'}}><span>Coming Soon</span></Link>
             </div>
+            <div className='headerr'>
+                {/* <Link className='h-btn' to='/login' style={{textDecoration: 'none', color:'white'}}><span>Login</span></Link> */}
+                <Link className='h-btn' to='/signup' style={{textDecoration: 'none', color:'white'}}><span>SignUp</span></Link>
+            </div>
         </div>
     );
 }
