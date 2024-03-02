@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import ReviewBox from '../../components/movieReview/reviewBox';
 
 // const tmdb_api_key = import.meta.env.VITE_TMDB_API_KEY;  
 const base_url = import.meta.env.VITE_BASE_URL;
@@ -15,6 +16,7 @@ const Movie = () => {
 
     useEffect(() => {
         getData();
+        console.log(currentMovieDetail)
         getTrailer();
         window.scrollTo(0,0);
     }, [])
@@ -100,6 +102,10 @@ const Movie = () => {
                 </div>
                 }
             </div>
+            <div className="movie__heading"> Reviews</div>
+                <div className="movie_review_box">
+                    <ReviewBox id={id}></ReviewBox>
+                </div>
             <div className="movie__heading">Production companies</div>
             <div className="movie__production">
                 {

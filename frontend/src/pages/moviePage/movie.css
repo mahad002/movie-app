@@ -125,13 +125,10 @@
     z-index: 1;
     border: 3px solid white;
     font-family: 'Poppins', sans-serif;
-    /* -webkit-backface-visibility: hidden; */
     -moz-osx-font-smoothing: grayscale;
     margin-top: -15px;
     overflow: hidden;
-    /* -webkit-transition: border-color 0.3s, color 0.3s; */
     transition: border-color 0.3s, color 0.3s;
-    /* -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1); */
     transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);  
 }
 
@@ -239,6 +236,23 @@
     justify-content: space-evenly;
     margin: 1rem;
 
+}
+
+.movie_review_heading{
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 2rem 0;
+}
+
+.movie_review_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem;
+    border-radius: 2px solid white;
+    width: 100%;
+    padding: 1rem;
 }
 
 @media screen and (max-width: 768px) {

@@ -1,4 +1,6 @@
-FROM node:21-alpine3.18
+FROM alpine:3.18
+
+ENV NODE_VERSION 18.19.1
 
 WORKDIR /app
 
@@ -10,4 +12,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

@@ -17,11 +17,12 @@ const MovieList = ({id}) => {
     }
 
     useEffect(() => {
-        getData()
+        getData();
     },[type])
 
     useEffect(() => {
-        getData()
+        // getData()
+        setPage(1);
     },[])
     //         https://api.themoviedb.org/3/movie/popular?api_key=${tmdb_api_key}&language=en-US&page=${1}&include_adult=false
     const getData = () => {

@@ -1,0 +1,44 @@
+.reviewBox{
+
+}
+
+
+.list{
+    padding: 0 4rem 4rem 4rem;
+    justify-content: start;
+    align-items: start;
+    place-items: start;
+    color: white;
+}
+
+.review{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+    border: 0.1px solid white;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+}
+
+.review_userBox{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    margin-bottom: 1rem;
+}
+
+.review_avatar{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.review_author{
+
+}
+
+.review_content{
+
+}
