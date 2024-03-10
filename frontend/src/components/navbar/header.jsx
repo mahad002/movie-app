@@ -12,7 +12,7 @@ const Header = () => {
             </div>
             <div className='headerr'>
                 {/* <Link className='h-btn' to='/login' style={{textDecoration: 'none', color:'white'}}><span>Login</span></Link> */}
-                <Link className='h-btn' to='/signup' style={{textDecoration: 'none', color:'white'}}><span>SignUp</span></Link>
+                <Link className='h-btn' to='/login-register' style={{textDecoration: 'none', color:'white'}}><span>SignUp</span></Link>
             </div>
         </div>
     );

@@ -31,7 +31,7 @@ const ReviewBox = ({id}) => {
     return (
         <div className='reviewBox'>
             {/* <h2 className='title'>Reviews</h2> */}
-            <div className='list'>
+            <div className='list1'>
                 {reviews.map((review) => (
                     <div key={review.id} className='review'>
                         <div className='review_userBox'>

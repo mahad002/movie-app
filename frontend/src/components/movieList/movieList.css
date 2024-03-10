@@ -11,6 +11,8 @@
     display: flex;
     flex-wrap: wrap ;
     justify-content: center;
+    padding: 0px;
+    margin: 0px;
 }
 
 .movieCard   {
@@ -27,6 +29,10 @@
     border: 1px solid rgb(99, 99, 99);
 }
 
+@media (min-width: 768px){
+    
+}
+
 @media (max-width: 768px) {
     .movieList {
         padding: 0 1rem 1rem 1rem;
@@ -35,5 +41,13 @@
     .title {
         font-size: 1.2rem;
         margin:  1.5rem 1rem;
+    }
+
+    .list {
+        display: flex;
+        flex-wrap: wrap ;
+        justify-content: center;
+        padding: 0px;
+        margin: 0px;
     }
 }
