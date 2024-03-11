@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './signup.css';
 
 const Register = ()=>{
-    const [user,setUser] = useState({username: "", password : "", role : "", name: "", email: ""});
+    const [user,setUser] = useState({username: "", password : "", role : "user", name: "", email: ""});
     const [message,setMessage] = useState(null);
     let timerID = useRef(null);
     const navigate = useNavigate();

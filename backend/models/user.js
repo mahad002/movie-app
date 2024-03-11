@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Review = require('./review'); 
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -29,21 +30,23 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'user', // 'user' or 'admin'
     },
+    profilePicture: {
+        type: String, 
+    },
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    bio: {
+        type: String,
+    },
     reviews: [{
-        movieId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Movie',
-            required: true,
-        },
-        rating: {
-            type: Number,
-            min: 1,
-            max: 10,
-            required: true,
-        },
-        comment: {
-            type: String,
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Review',
     }],
     usernameChangeCount: {
         type: Number,

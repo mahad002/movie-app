@@ -22,7 +22,7 @@ function App() {
             <Route path="movies/:type" element={<MovieList/>} />
             <Route path="movie/:id" element={<Movie/>} />
             <Route path="login-register" element={<h1><LoginRegister/></h1>} />
-            <Route path="signup" element={<h1><Register/></h1>} />
+            <Route path="signup" element={<h1><Login/></h1>} />
             <Route path="/*" element={<h1>Error 404 Page not available!</h1>} />
           </Routes>
         </Router>

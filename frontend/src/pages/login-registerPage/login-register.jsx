@@ -1,6 +1,7 @@
 import './login-register.css';
-import React, { useState,useRef,useEffect } from 'react';
+import { useState,useRef,useEffect,useContext } from 'react';
 import AuthServices from '../../services/AuthServices';
+import { AuthContext } from '../../Context/AuthContext';
 import Message from '../../components/Message';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -11,22 +12,24 @@ import {
   MDBCard,
   MDBCardBody,
   MDBInput,
-  MDBCheckbox,
-  MDBIcon
+  // MDBCheckbox,
+  // MDBIcon  
 } from 'mdb-react-ui-kit';
 
 function LoginRegister() {
   const [activeTab, setActiveTab] = useState('signup');
-  const [user,setUser] = useState({username: "", password : "", role : "", name: "", email: ""});
-    const [message,setMessage] = useState(null);
+  const [user,setUser] = useState({username: "", password : "", role : "user", name: "", email: ""});
+    const [message, setMessage] = useState(null);
+    const authContext = useContext(AuthContext);
     let timerID = useRef(null);
-    const navigate = useNavigate();
+    const navigate = useNavigate();   
+
 
     useEffect(()=>{
         return ()=>{
             clearTimeout(timerID);
         }
-    },[]);
+    },[activeTab]);
 
     const onChange = e =>{
         setUser({...user,[e.target.name] : e.target.value});
@@ -41,13 +44,38 @@ function LoginRegister() {
         AuthServices.register(user).then(data=>{
             const { message } = data;
             setMessage(message);
+            console.log("MESSAGE: ",message);
             resetForm();
             if(!message.msgError){
                 timerID = setTimeout(()=>{
-                    navigate('/login');
+                    // navigate('/');
+                    setActiveTab('login')
                 },2000)
             }
         });
+    }
+
+    const onSubmit1 = e =>{
+      e.preventDefault();
+      AuthServices.login(user).then(data=>{
+          console.log(data);
+          const { isAuthenticated,user,message} = data;
+          if(isAuthenticated){
+              authContext.setUser(user);
+              authContext.setIsAuthenticated(isAuthenticated);
+              setMessage(message);
+              console.log("MESSAGE: ",message);
+              setTimeout(()=>{
+                navigate('/');
+              },3000)
+          }
+          else
+              setMessage(message);
+              console.log("MESSAGE: ",message);
+              setTimeout(()=>{
+                navigate('/');
+              },3000)
+      });
     }
 
   const toggleTab = (tab) => {
@@ -65,7 +93,7 @@ function LoginRegister() {
       <MDBRow>
       <MDBCol md='6'>
           <MDBCard className='card1 my-5'>
-            <MDBCardBody className='p-5 bg-red'>
+            <MDBCardBody className='p-4'>
               <ul className="nav nav-tabs">
                 <li className="nav-item">
                   <a className={`nav-link ${activeTab === 'signup' ? 'active' : ''} bg-transaprent`} onClick={() => toggleTab('signup')}>
@@ -84,20 +112,51 @@ function LoginRegister() {
                   <div>
                     <MDBRow className='mt-4'>
                       <MDBCol col='6'>
-                        <MDBInput wrapperClass='mb-4' label='First name' id='form1' type='text' />
+                        <MDBInput
+                          wrapperClass='mb-4'
+                          label='Full name'
+                          id='fullName'
+                          type='text'
+                          name='name' // Add name attribute for identification
+                          value={user.name}
+                          onChange={onChange}
+                        />
                       </MDBCol>
                       <MDBCol col='6'>
-                        <MDBInput wrapperClass='mb-4' label='Last name' id='form1' type='text' />
+                        <MDBInput
+                          wrapperClass='mb-4'
+                          label='Username'
+                          id='username'
+                          type='text'
+                          name='username'
+                          value={user.username}
+                          onChange={onChange}
+                        />
                       </MDBCol>
                     </MDBRow>
-                    <MDBInput wrapperClass='mb-4' label='Email' id='form1' type='email' />
-                    <MDBInput wrapperClass='mb-4' label='Password' id='form1' type='password' />
-                    <div className='d-flex justify-content-center mb-4'>
-                      <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Subscribe to our newsletter' />
+                    <MDBInput
+                      wrapperClass='mb-4'
+                      label='Email'
+                      id='email'
+                      type='email'
+                      name='email'
+                      value={user.email}
+                      onChange={onChange}
+                    />
+                    <MDBInput
+                      wrapperClass='mb-4'
+                      label='Password'
+                      id='password'
+                      type='password'
+                      name='password'
+                      value={user.password}
+                      onChange={onChange}
+                    />
+                    <div className='d-flex justify-content-end'>
+                      <MDBBtn className='w-30 mb-4 mt-2' size='md' type='submit' onClick={onSubmit}>
+                        Sign Up
+                      </MDBBtn>
                     </div>
-                    <MDBBtn className='w-100 mb-4' size='md'>
-                      Sign Up
-                    </MDBBtn>
                   </div>
                 )}
 
@@ -105,17 +164,35 @@ function LoginRegister() {
                   <div>
                     <MDBRow className='justify-content-center mt-4'>
                         <MDBCol md='8'>
-                        <MDBInput wrapperClass='mb-4' label='Email' id='form1' type='email' className='custom-width-input' />
+                        <MDBInput 
+                          wrapperClass='mb-4' 
+                          label='username' 
+                          id='form1' 
+                          type='username' 
+                          className='custom-width-input' 
+                          value = {user.username}
+                          onChange= {onChange}
+                        />
                         </MDBCol>
                     </MDBRow>
                     <MDBRow className='justify-content-center'>
                         <MDBCol md='8'>
-                        <MDBInput wrapperClass='mb-4' label='Password' id='form1' type='password' className='custom-width-input' />
+                        <MDBInput 
+                          wrapperClass='mb-4' 
+                          label='Password' 
+                          id='form1' 
+                          type='password' 
+                          className='custom-width-input'
+                          value = {user.password}
+                          onChange= {onChange}
+                        />
                         </MDBCol>
                     </MDBRow>
-                    <MDBBtn className='w-100 mb-4' size='md'>
-                        Login
-                    </MDBBtn>
+                    <div className='d-flex justify-content-end'>
+                      <MDBBtn className='w-30 mb-4 mt-2' size='md' type='submit' onClick={onSubmit1}>
+                          Login
+                      </MDBBtn>
+                    </div>
                 </div>
                 )}
               </div>

@@ -7,10 +7,9 @@ const secret = process.env.SECRET;
 const UserAuth = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
+        const decoded = jwt.verify(token, process.env.SECRET);
 
-        const decoded = jwt.verify(token, secret);
-
-        const user = await User.findOne({ _id: decoded.userId });
+        const user = await UserModel.findOne({ _id: decoded.userId });
 
         if (!user) {
             throw new Error();
