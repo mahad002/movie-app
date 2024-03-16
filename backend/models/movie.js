@@ -101,9 +101,10 @@ const movieSchema = new mongoose.Schema({
     tagline: {
         type: String,
     },
-    review: {
-        type: [String],
-    },
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'reviews'
+    }],
 });
 
 const Movie = mongoose.model('Movie', movieSchema);

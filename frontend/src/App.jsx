@@ -5,7 +5,6 @@ import Home from "./pages/homePage/home";
 import MovieList from "./components/movieList/movieList";
 import Movie from "./pages/moviePage/movie";
 import Login from "./pages/loginPage/login";
-import Register from "./pages/signupPage/signup";
 import LoginRegister from "./pages/login-registerPage/login-register";
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";

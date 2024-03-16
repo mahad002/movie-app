@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
                 resolve({ fields, files });
             });
         });
-
+        console.log('length: ', files.file.length);
         const client = new S3Client({
             region: 'ap-south-1',
             credentials: {
@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
         for (const file of files.file) {
             const ext = file.originalFilename.split('.').pop();
             const newFilename = Date.now() + '.' + ext;
-            console.log({ ext, file });
+            // console.log({ ext, file });
 
             await client.send(new PutObjectCommand({
                 Bucket: process.env.AWS_BUCKET_NAME,

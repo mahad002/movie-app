@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
     author: {
-        type: String,
+        type: String, // name
         required: true,
     },
     authorDetails: {
         name: {
-            type: String,
+            type: String, // name
         },
         username: {
             type: String,

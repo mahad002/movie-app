@@ -2,11 +2,27 @@ import './reviewBox.css';
 import {useEffect, useState} from 'react';
 // import {useParams} from "react-router-dom";
 import axios from 'axios';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const ReviewBox = ({id}) => {
     const [reviews, setReviews] = useState([]);
     const tmdb_api_key = import.meta.env.VITE_TMDB_API_KEY; 
     const [page, setPage] = useState(1);
+    const [showFullText, setShowFullText] = useState(reviews.map(() => false));
+
+    const toggleShowFullText = (index) => {
+        const updatedShowFullText = [...showFullText];
+        updatedShowFullText[index] = !updatedShowFullText[index];
+        setShowFullText(updatedShowFullText);
+    };
+
+    const handleSeeMore = (index) => {
+        toggleShowFullText(index);
+    };
+
+    const handleSeeLess = (index) => {
+        toggleShowFullText(index);
+    };
 
     const getData = async () => {
         try {
@@ -32,25 +48,56 @@ const ReviewBox = ({id}) => {
         <div className='reviewBox'>
             {/* <h2 className='title'>Reviews</h2> */}
             <div className='list1'>
-                {reviews.map((review) => (
-                    <div key={review.id} className='review'>
-                        <div className='review_userBox'>
-                            <img
-                                className='review_avatar'
-                                src={`https://image.tmdb.org/t/p/original${review.author_details.avatar_path}`}
-                                alt='User Avatar'
-                                onError={(e) => {
-                                    e.target.onerror = null; // Avoid infinite loop in case the alternative image also fails to load
-                                    e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2048px-No_image_available.svg.png';
-                                }}
-                            />
-                            <div className='review_author'>{review.author}</div>
+                {reviews.map((review, index) => (
+                    <div key={review.id} className='comment'>
+                        <img
+                            src={`https://image.tmdb.org/t/p/original${review.author_details.avatar_path}`}
+                            alt='User Avatar'
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2048px-No_image_available.svg.png';
+                            }}
+                        />
+                        <div>
+                            <h3>{review.author}</h3>
+                            {showFullText[index] || review.content.length <= 1000 ? (
+                                <p>{review.content}</p>
+                            ) : (
+                                <div>
+                                    <p>{review.content.substring(0, 1000)}...</p>
+                                    <button className='btnML btnM' onClick={() => handleSeeMore(index)}>
+                                        See more <FaChevronDown />
+                                    </button>
+                                </div>
+                            )}
+                            {showFullText[index] && (
+                                <button className='btnML btnL' onClick={() => handleSeeLess(index)}>
+                                    See less <FaChevronUp />
+                                </button>
+                            )}
                         </div>
-                        <div className='review_content'>{review.content}</div>
                     </div>
                 ))}
             </div>
         </div>
+                    // <div key={review.id} className='review'>
+                    //     <div className='review_userBox'>
+                    //         <img
+                    //             className='review_avatar'
+                    //             src={`https://image.tmdb.org/t/p/original${review.author_details.avatar_path}`}
+                    //             alt='User Avatar'
+                    //             onError={(e) => {
+                    //                 e.target.onerror = null; // Avoid infinite loop in case the alternative image also fails to load
+                    //                 e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2048px-No_image_available.svg.png';
+                    //             }}
+                    //         />
+                    //         <div className='review_author'>{review.author}</div>
+                    //     </div>
+                    //     <div className='review_content'>{review.content}</div>
+                    // </div>
+        //         ))}
+        //     </div>
+        // </div>
     );
 }
 

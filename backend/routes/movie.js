@@ -5,6 +5,7 @@ require("dotenv").config();
 const User = require('../models/user');
 const Movie = require('../models/movie');
 const UserAuth = require('../middlewares/UserAuth');
+const Review = require('../models/review');
 
 const tmdb_api_key = process.env.TMDB_API_KEY;
 const base_url = process.env.BASE_URL;
@@ -183,7 +184,23 @@ router.get('/getMovies/:type', async (req, res) => {
     }
 });
 
-module.exports = router;
+router.post('/getAllMovies', async (req, res) => {
+    try {
+        const movies = await Movie.find();
+
+        if (!movies || movies.length === 0) {
+            return res.status(404).json({ error: 'No movies found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            movies: movies,
+        });
+    } catch (error) {
+        console.error('Error Hello:', error);
+        res.status(500).json({ error: 'Mahad Server Error' });
+    }
+});
 
 
 router.post('/review/:movieId', UserAuth, async (req, res) => {
@@ -207,6 +224,67 @@ router.post('/review/:movieId', UserAuth, async (req, res) => {
         res.status(201).json({ message: 'Review added successfully.' });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/updateMovieReviews', async (req, res) => {
+    try {
+        const response = await axios.post(`${base_url}/movie/getAllMovies`);
+        const movies = response.data.movies;
+
+        if (!Array.isArray(movies)) {
+            console.error("Invalid response format: movies is not an array");
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        if (!movies || movies.length === 0) {
+            return res.status(404).json({ error: 'No movies found' });
+        }
+
+        for (const movieData of movies) {
+            const id = movieData.id;
+            const reviewsResponse = await axios.get(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${tmdb_api_key}&language=en-US&page=2&include_adult=false`);
+            const reviewsData = reviewsResponse.data.results;
+
+            let updatedReviews = [];
+
+            for (const reviewData of reviewsData) {
+                const review = {
+                    author: reviewData.author,
+                    authorDetails: {
+                        name: reviewData.author_details.name || "Anonymous",
+                        username: reviewData.author_details.username,
+                        avatarPath: reviewData.author_details.avatar_path || "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2048px-No_image_available.svg.png",
+                        rating: reviewData.author_details.rating,
+                    },
+                    content: reviewData.content,
+                    createdAt: reviewData.created_at,
+                    updatedAt: reviewData.updated_at,
+                    url: reviewData.url,
+                };
+
+                const existingReview = await Review.findOneAndUpdate({ url: review.url }, review, { upsert: true, new: true });
+
+                updatedReviews.push(existingReview._id);
+            }
+
+            // Update the existing movie with new reviews
+            const movieUpdate = {
+                $addToSet: { reviews: { $each: updatedReviews } }
+            };
+            const updatedMovie = await Movie.findOneAndUpdate({ id }, movieUpdate, { new: true, upsert: true });
+            console.log(updatedMovie);
+
+            if (!updatedMovie) {
+                console.error(`Failed to update movie with ID ${id}`);
+                continue; // Skip to the next movie
+            }
+        }
+
+        res.status(200).json({ success: true, message: 'Movie reviews updated successfully' });
+    } catch (error) {
+        console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

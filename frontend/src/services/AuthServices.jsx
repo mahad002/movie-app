@@ -10,38 +10,50 @@ const instance = axios.create({
 });
 
 export default {
-  login: user => {
+  login: async (user) => {
+    try {
+      const res = await instance.post('/user/login', user);
+      // const userData = {
+      //   username: user.username,
+      //   name: user.name,
+      //   profilePicture: user.profilePicture,
+      //   token: res.data.token,
+      //   role: user.role,
+      //   email: user.email,
+      // };
+      // localStorage.setItem('userData', JSON.stringify(userData));
+      return res.data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
+  register: async user => {
     console.log(user);
-    return instance.post('/user/login', user)
-      .then(res => res.data)
-      .catch(error => {
-        console.error('Login error:', error);
-        throw error;
-      });
+    try {
+      const res = await instance.post('/user/signup', user);
+      return res.data;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   },
-  register: user => {
-    console.log(user);
-    return instance.post('/user/signup', user)
-      .then(res => res.data)
-      .catch(error => {
-        console.error('Registration error:', error);
-        throw error;
-      });
+  logout: async () => {
+    try {
+      const res = await instance.post('/user/logout');
+      return res.data;
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
   },
-  logout: () => {
-    return instance.post('/user/logout')
-      .then(res => res.data)
-      .catch(error => {
-        console.error('Logout error:', error);
-        throw error;
-      });
-  },
-  isAuthenticated: () => {
-    return instance.get('/user/authenticated')
-      .then(res => res.data)
-      .catch(error => {
-        console.error('Authentication error:', error);
-        throw error;
-      });
+  isAuthenticated: async () => {
+    try {
+      const res = await instance.get('/user/authenticated');
+      return res.data;
+    } catch (error) {
+      console.error('Authentication error:', error);
+      throw error;
+    }
   }
 }

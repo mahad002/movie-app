@@ -10,12 +10,19 @@ const getStyle = (props)=>{
     return baseClass + " text-center";
 }
 
-const Message = props=>{
-    return(
+import PropTypes from 'prop-types';
+
+const Message = props => {
+    return (
         <div className={getStyle(props)} role="alert">
             {props.message}
         </div>
-    )
-}
+    );
+};
+
+Message.propTypes = {
+    message: PropTypes.string.isRequired,
+};
+
 
 export default Message;

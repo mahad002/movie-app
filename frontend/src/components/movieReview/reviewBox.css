@@ -42,3 +42,81 @@
 .review_content{
 
 }
+
+.comment{
+    display: flex;
+    align-items: start;
+    margin: 20px 0;
+}
+
+.comment img{
+    width:40px;
+    height:40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.comment h3{
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.comment p{
+    font-size: 14px;
+    margin-top: 2px;
+    font-weight: 500;
+    color: #827e7e;
+}
+
+.btnML{
+    /* margin-top: 0.4rem; */
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    color: rgb(203, 191, 191);
+    font-size: small;
+    font-weight: normal;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* opacity: 30%; */
+}
+
+.btnM{
+    background-color: transparent;
+    opacity: 30%;
+}
+
+.btnL{
+    background-color: #ff201d;
+    /* opacity: 60%; */
+
+}
+
+@media screen and (max-width: 768px) {
+    .list1{
+        padding: 0 0.5rem 0.5rem 0.5rem;
+    }
+
+    .review{
+        padding: 1rem 1.5rem;
+    }
+
+    .comment{
+        margin-left: 1rem;
+        margin-right: 1rem;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .comment img{
+        width:30px;
+        height:30px;
+    }
+    
+    .comment h3{
+        font-size: 12px;
+    }
+    
+    .comment p{
+        font-size: 10px;
+    }
+}

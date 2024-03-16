@@ -121,6 +121,11 @@ router.post('/signup', async (req, res) => {
             email: req.body.email,
             name: req.body.name,
             role: req.body.role,
+            profilePicture: req.body.profilePicture,
+            bio: req.body.bio,
+            following: [],
+            followers: [],
+            reviews: []
         });
 
         await newUser.save();
@@ -148,7 +153,7 @@ router.post('/login', async (req, res) => {
 
         // Generate and send JWT token
         const token = jwt.sign({ userId: user._id }, Secret);
-        const message = `Welcome back, ${user.username}!`;
+        const message = `Welcome, ${user.username}!`;
         res.status(200).json({ token, message });
     } catch (error) {
         console.error(error);
