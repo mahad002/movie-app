@@ -2,9 +2,12 @@ import './movieList.css';
 import {useEffect, useState} from 'react';
 import Cards from '../movieCard/movieCard';
 import {useParams} from "react-router-dom";
+import axios from 'axios';
+
+const base_url = import.meta.env.VITE_BASE_URL;
+const tmdb_api_key = import.meta.env.VITE_TMDB_API_KEY;  // Use VITE_ prefix
 
 const MovieList = ({id}) => {
-    const tmdb_api_key = import.meta.env.VITE_TMDB_API_KEY;  // Use VITE_ prefix
     const {type} = useParams();
     const [movies, setMovies] = useState([]);
     const [page, setPage] = useState(1);
@@ -24,12 +27,19 @@ const MovieList = ({id}) => {
         // getData()
         setPage(1);
     },[])
-    //         https://api.themoviedb.org/3/movie/popular?api_key=${tmdb_api_key}&language=en-US&page=${1}&include_adult=false
-    const getData = () => {
-        fetch(`https://api.themoviedb.org/3/movie/${type ? type: id}?api_key=${tmdb_api_key}&language=en-US&page=${page}&include_adult=false`)
-            .then(res => res.json())
-            .then(data => {setMovies(data.results); type ? setTitle(tt[type]): setTitle(tt[id])})
-            .catch(error => console.error('Error fetching data:', error));
+    // can improvise something by fetching data from here   https://api.themoviedb.org/3/movie/popular?api_key=${tmdb_api_key}&language=en-US&page=${1}&include_adult=false
+
+    const getData = async () => {
+            try {
+                const response = await axios.get(`${base_url}/movie/getMovies/${type ? type: id}`);
+                const data = response.data;
+                console.log(data);
+                const movies = data.movies.map(entry => entry.movie);
+                setMovies(movies);
+                type ? setTitle(tt[type]): setTitle(tt[id]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
     }
 
 

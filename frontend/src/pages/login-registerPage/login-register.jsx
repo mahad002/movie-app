@@ -21,9 +21,10 @@ import Spinner from '../../components/spinner/spinner';
 
 function LoginRegister() {
   const [activeTab, setActiveTab] = useState('signup');
-  const [user,setUser] = useState({username: "", password : "", role : "user", name: "", email: "", profilePicture: ""});
+  const [user1,setUser1] = useState({username: "", password : "", role : "user", name: "", email: "", profilePicture: ""});
   const [message, setMessage] = useState(null);
-  const authContext = useContext(AuthContext);
+  // const authContext = useContext(AuthContext);
+  const { user, setUser  } = useContext(AuthContext);
   let timerID = useRef(null);
   const navigate = useNavigate();   
   const [spinner, setSpinner] = useState(false);
@@ -39,19 +40,19 @@ function LoginRegister() {
     },[activeTab]);
 
     const onChange = e =>{
-        setUser({...user,[e.target.name] : e.target.value});
+        setUser1({...user1,[e.target.name] : e.target.value});
     }
 
     const resetForm = ()=>{
-        setUser({username : "", password : "",role : "", name: "", email: "", profilePicture: ""});
+        setUser1({username : "", password : "",role : "", name: "", email: "", profilePicture: ""});
     }
 
     const onSubmit = e =>{
         e.preventDefault();
-        if(user.profilePicture === ""){
-          user.profilePicture = "https://movie-webapp.s3.ap-south-1.amazonaws.com/1710577341001.jpg";
+        if(user1.profilePicture === ""){
+          user1.profilePicture = "https://movie-webapp.s3.ap-south-1.amazonaws.com/1710577341001.jpg";
         }
-        AuthServices.register(user).then(data=>{
+        AuthServices.register(user1).then(data=>{
             const { message } = data;
             setMessage(message);
             console.log("MESSAGE: ",message);
@@ -60,25 +61,36 @@ function LoginRegister() {
                 timerID = setTimeout(()=>{
                     // resetForm();
                     // setActiveTab('login');
-                    AuthServices.login(user).then(data=>{
+                    AuthServices.login(user1).then(data=>{
                       console.log(data);
-                      console.log("USER: ",user);
+                      // console.log("USER: ",user);
                       console.log("DATA: ",AuthContext);
-                      const { isAuthenticated,user,message} = data;
+                      const { isAuthenticated,message, token} = data;
+                      console.log("TOKEN: ",token);
+                      // setIsAuthenticated(isAuthenticated);
+                      setUser(user);
+                      // console.log("USER: ",user);
+                      // AuthContext.setUser(user);
+                      // AuthContext.setToken(token);
+                      // AuthContext.setMessage(message);
+
+                      console.log("ISAUTHENTICATED: ",isAuthenticated);
+                      console.log("USER: ",user);
+                      console.log("MESSAGE: ",message);
                       if(isAuthenticated){
-                          authContext.setUser(user);
-                          authContext.setIsAuthenticated(isAuthenticated);
+                          // authContext.setUser(user);
+                          // authContext.setIsAuthenticated(isAuthenticated);
                           setMessage(message);
                           console.log("MESSAGE: ",message);
                           setTimeout(()=>{
-                            navigate('/');
+                            navigate(`/profile/${user.username}`, { replace: true });
                           },3000)
                       }
                       else
                           setMessage(message);
                           console.log("MESSAGE: ",message);
                           setTimeout(()=>{
-                            navigate('/');
+                            navigate(`/`);
                           },3000)
                   });
                 },2000)
@@ -88,12 +100,12 @@ function LoginRegister() {
 
     const onSubmit1 = e =>{
       e.preventDefault();
-      AuthServices.login(user).then(data=>{
+      AuthServices.login(user1).then(data=>{
           console.log(data);
           const { isAuthenticated,user,message} = data;
           if(isAuthenticated){
-              authContext.setUser(user);
-              authContext.setIsAuthenticated(isAuthenticated);
+              setUser(user);
+              // setIsAuthenticated(isAuthenticated);
               setMessage(message);
               console.log("MESSAGE: ",message);
               setTimeout(()=>{
@@ -128,8 +140,8 @@ function LoginRegister() {
         const res = await axios.post(`${BASE_URL}/upload/`, data);
         setImage([res.data.links]); 
         console.log("IMAGE: ", res.data.links[0].toString());
-        user.profilePicture = String(res.data.links[0]);
-        console.log("USER Picture: ", user.profilePicture);
+        user1.profilePicture = String(res.data.links[0]);
+        console.log("USER Picture: ", user1.profilePicture);
       } catch (error) {
         console.error("Error uploading image:", error);
       } finally {
@@ -177,7 +189,7 @@ function LoginRegister() {
                           id='fullName'
                           type='text'
                           name='name' // Add name attribute for identification
-                          value={user.name}
+                          value={user1.name}
                           onChange={onChange}
                         />
                       </MDBCol>
@@ -188,7 +200,7 @@ function LoginRegister() {
                           id='username'
                           type='text'
                           name='username'
-                          value={user.username}
+                          value={user1.username}
                           onChange={onChange}
                         />
                       </MDBCol>
@@ -199,7 +211,7 @@ function LoginRegister() {
                       id='email'
                       type='email'
                       name='email'
-                      value={user.email}
+                      value={user1.email}
                       onChange={onChange}
                     />
                     <MDBInput
@@ -208,7 +220,7 @@ function LoginRegister() {
                       id='password'
                       type='password'
                       name='password'
-                      value={user.password}
+                      value={user1.password}
                       onChange={onChange}
                     />
                     <div className="image-div mb-2">
@@ -273,7 +285,7 @@ function LoginRegister() {
                           id='form1' 
                           type='username' 
                           className='custom-width-input' 
-                          value = {user.username}
+                          value = {user1.username}
                           onChange= {onChange}
                         />
                         </MDBCol>
@@ -286,7 +298,7 @@ function LoginRegister() {
                           id='form1' 
                           type='password' 
                           className='custom-width-input'
-                          value = {user.password}
+                          value = {user1.password}
                           onChange= {onChange}
                         />
                         </MDBCol>

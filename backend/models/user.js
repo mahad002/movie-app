@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
     lastUsernameChange: {
         type: Date,
     },
+    authenticated: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 const User = mongoose.model('User', userSchema);

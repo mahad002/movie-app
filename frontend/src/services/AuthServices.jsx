@@ -13,15 +13,7 @@ export default {
   login: async (user) => {
     try {
       const res = await instance.post('/user/login', user);
-      // const userData = {
-      //   username: user.username,
-      //   name: user.name,
-      //   profilePicture: user.profilePicture,
-      //   token: res.data.token,
-      //   role: user.role,
-      //   email: user.email,
-      // };
-      // localStorage.setItem('userData', JSON.stringify(userData));
+      console.log("res.data: ", res.data);
       return res.data;
     } catch (error) {
       console.error('Login error:', error);
@@ -47,13 +39,15 @@ export default {
       throw error;
     }
   },
-  isAuthenticated: async () => {
+  isAuthenticated: async (id) => {
     try {
-      const res = await instance.get('/user/authenticated');
+      const res = await instance.get('/user/authenticated', {
+        params: { id },
+      });
       return res.data;
     } catch (error) {
       console.error('Authentication error:', error);
       throw error;
     }
-  }
+  },
 }

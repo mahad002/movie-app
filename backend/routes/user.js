@@ -154,7 +154,8 @@ router.post('/login', async (req, res) => {
         // Generate and send JWT token
         const token = jwt.sign({ userId: user._id }, Secret);
         const message = `Welcome, ${user.username}!`;
-        res.status(200).json({ token, message });
+        const isAuthenticated = true;
+        res.status(200).json({ token, isAuthenticated, user, message });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -201,6 +202,21 @@ router.put('/update-password', UserAuth, async (req, res) => {
 
         await user.save();
         res.status(200).json({ message: 'Password updated successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// authenticated
+router.get('/authenticated', UserAuth, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+        if (user) {
+            user.authenticated = true; // update the authenticated field
+            await user.save(); // save the updated user document
+        }
+        res.status(200).json({ isAuthenticated: true, user });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
