@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .image-div {
     display: flex;
     flex-wrap: wrap;
@@ -72,3 +76,81 @@
     opacity: 1;
   }
   
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+  }
+  
+  .input-field {
+    margin: 10px 0;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .add-button .genre-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .genre-list {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  
+  .genre-item {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    font-size: small;
+  }
+  
+  .genre-id, .genre-name {
+    margin-right: 10px;
+  }
+  
+  .remove-genre-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 16px;
+    padding: 0;
+  }
+  
+  .genre-input-id, .genre-input-name {
+    flex-grow: 1;
+  }
+
+  .genre-message{
+    color: red;
+    font-size: 12px;
+  }
+  
+  .genre-button{
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 6rem;
+  }

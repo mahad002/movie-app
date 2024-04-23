@@ -29,7 +29,6 @@ function MovieForm() {
     title: '',
     description: '',
     releaseDate: '',
-    genre: '',
     backdropPath: '',
     posterPath: '',
     adult: false,
@@ -41,20 +40,30 @@ function MovieForm() {
     video: false, //I checked the Tmbd Database and every movie has video as false so I'm considering it as false
     voteAverage: null,
     voteCount: null,
-    belongsToCollection: {},
+    belongsToCollection: {}, //
     budget: null,
     genres: [],
     homepage: '',
     imdbId: '',
-    productionCompanies: [],
-    productionCountries: [],
+    productionCompanies: [], // 
+    productionCountries: [], //
     revenue: null,
     runtime: null,
-    spokenLanguages: [],
+    spokenLanguages: [], //
     status: '',
     tagline: '',
-    reviews: []
+    reviews: [] //
   });
+  const [genreData, setGenreData] = useState({
+    id: '',
+    name: ''
+  });
+  const [productionCountriesData, setProductionCountriesData] = useState({
+    name: ''
+  });
+  const [genre_message, setGenreMessage] = useState(null);
+  const [company_message, setCompanyMessage] = useState(null);
+  const [country_message, setCountryMessage] = useState(null);
 
   useEffect(()=>{
     console.log(movieData)
@@ -102,15 +111,67 @@ function MovieForm() {
     }
   };
 
-  const handleReleaseDate = (e) => {
-    setMovieData(prevData => ({ ...prevData, releaseDate: e.target.value }));
-    console.log(movieData.releaseDate)
+  const handleRemoveGenre = (index) => {
+    const updatedGenres = movieData.genres.filter((genre, i) => i !== index);
+    setMovieData(prevData => ({
+      ...prevData,
+      genres: updatedGenres
+    }));
   };
 
-  // const today = new Date();
-  // const numberOfDaysToAdd = 3;
-  // const date = today.setDate(today.getDate() + numberOfDaysToAdd); 
-  // const defaultValue = new Date(date).toISOString().split('T')[0] // yyyy-mm-dd
+  const handleRemoveProductionCountries = (index) => {
+    const updatedProductionCompanies = movieData.productionCountries.filter((genre, i) => i !== index);
+    setMovieData(prevData => ({
+      ...prevData,
+      productionCompanies: updatedProductionCompanies
+    }));
+  };
+
+  const handleAddGenre = () => {
+    if (genreData.id && genreData.name) {
+      // Check if ID or name already exists in genres array
+      const exists = movieData.genres.some(genre => genre.id === genreData.id || genre.name === genreData.name);
+      if (!exists) {
+        setMovieData(prevData => ({
+          ...prevData,
+          genres: [...prevData.genres, { id: genreData.id, name: genreData.name }]
+        }));
+        setMovieData(prevData => ({
+          ...prevData,
+          genreIds: [...prevData.genreIds, {id: genreData.id }]
+        }));
+        setGenreData({ id: '', name: '' });
+      } else {
+        // Handle error or show message indicating genre already exists
+        console.log('Genre with the same ID or name already exists!');
+        setGenreMessage('Genre with the same ID or name already exists!');
+      }
+    }
+  };
+
+  const handleAddProductionCountries = () => {
+    if (productionCountriesData.name) {
+      // Check if ID or name already exists in genres array
+      const exists = movieData.productionCountries.some(productionCountries => productionCountries.name === productionCountriesData.name);
+      if (!exists) {
+        setMovieData(prevData => ({
+          ...prevData,
+          productionCountries: [...prevData.productionCountries, { name: productionCountriesData.name }]
+        }));
+        setProductionCountriesData({ name: '' });
+      } else {
+        // Handle error or show message indicating already exists
+        console.log('Production Country with the same name already exists!');
+        setGenreMessage('Production Country with the same name already exists!');
+      }
+    }
+  };
+  
+
+  // const handleReleaseDate = (e) => {
+  //   setMovieData(prevData => ({ ...prevData, releaseDate: e.target.value }));
+  //   console.log(movieData.releaseDate)
+  // };
 
   return (
     <MDBContainer fluid className='p-4'>
@@ -163,7 +224,7 @@ function MovieForm() {
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, description: e.target.value }))}
                           />
                         </MDBCol>
-                      <MDBRow className=''>
+                      {/* <MDBRow className=''>
                         <MDBCol>
                           <MDBInput
                             selected={movieData.releaseDate}
@@ -176,7 +237,7 @@ function MovieForm() {
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, genre: e.target.value }))}
                           />
                         </MDBCol>
-                      </MDBRow>
+                      </MDBRow> */}
                       <MDBRow className='flex-row'>
                         <MDBCol>
                           <label htmlFor="Adult" className="block text-sm font-small text-gray-700">
@@ -185,7 +246,7 @@ function MovieForm() {
                               name='Adult' 
                               id='Adult' 
                               value={movieData.adult}
-                              checked={!movieData.adult} 
+                              checked={movieData.adult} 
                               onChange={() => {setMovieData(prevData => ({ ...prevData, adult: !prevData.adult })); console.log(movieData.adult)}} 
                               className='m-2 mb-0 mt-0' 
                               inline 
@@ -407,6 +468,84 @@ function MovieForm() {
                         </label>
                       </div>
                     </div>
+                    <MDBRow className="mt-4">
+                    <MDBCol>
+                      <h5 className='text-black'>Genres</h5>
+                      <div className="genre-list">
+                        {movieData.genres.map((genre, index) => (
+                          <div key={index} className="genre-item text-black d-flex align-items-center">
+                            <span className="genre-id me-2">ID: {genre.id}</span>
+                            <span className="genre-name me-2">Name: {genre.name}</span>
+                            <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemoveGenre(index)}>
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="d-flex align-items-center mt-2">
+                        <MDBInput
+                          label="ID"
+                          type="text"
+                          value={genreData.id}
+                          onChange={(e) => setGenreData(prevData => ({ ...prevData, id: e.target.value }))}
+                          className="me-2 genre-input-id"
+                        />
+                        <MDBInput
+                          label="Name"
+                          type="text"
+                          value={genreData.name}
+                          onChange={(e) => setGenreData(prevData => ({ ...prevData, name: e.target.value }))}
+                          className="me-2 genre-input-name"
+                        />
+                        <div className='d-flex justify-content-end'>
+                          <MDBBtn className="genre-button" size='md' color="primary" onClick={handleAddGenre}>Add Genre</MDBBtn>
+                        </div>
+                      </div>
+                    </MDBCol>
+                  </MDBRow>
+                    <div>{genre_message && 
+                      <div className='genre-message mt-2'>
+                        <Message message={genre_message} />
+                      </div> }
+                      </div>
+                      <MDBRow className="mt-4">
+                    <MDBCol>
+                      <h5 className='text-black'>Genres</h5>
+                      <div className="genre-list">
+                        {movieData.genres.map((genre, index) => (
+                          <div key={index} className="genre-item text-black d-flex align-items-center">
+                            <span className="genre-id me-2">ID: {genre.id}</span>
+                            <span className="genre-name me-2">Name: {genre.name}</span>
+                            <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemoveProductionCountries(index)}>
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="d-flex align-items-center mt-2">
+                        <MDBInput
+                          label="Name"
+                          type="text"
+                          value={genreData.name}
+                          onChange={(e) => setProductionCountriesData(prevData => ({ ...prevData, name: e.target.value }))}
+                          className="me-2 genre-input-name"
+                        />
+                        {/* <div className='m-8'></div> */}
+                        <div className='d-flex justify-content-end'>
+                          <MDBBtn className="genre-button" size='md' color="primary" onClick={handleAddProductionCountries}>Add</MDBBtn>
+                        </div>
+                      </div>
+                    </MDBCol>
+                  </MDBRow>
+                    <div>{country_message && 
+                      <div className='company-message mt-2'>
+                        <Message message={country_message} />
+                      </div> }
+                      </div>
                     <div className='d-flex justify-content-end'>
                       <MDBBtn className='w-30 mb-4 mt-2' size='md' type='submit' >
                         Add Movie
@@ -417,7 +556,6 @@ function MovieForm() {
             </MDBCardBody>
           </MDBCard>
         </MDBCol>
-      
   </MDBContainer>
   );
 }
