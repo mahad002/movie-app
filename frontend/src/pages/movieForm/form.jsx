@@ -545,7 +545,16 @@ function MovieForm() {
                       <div className='company-message mt-2'>
                         <Message message={country_message} />
                       </div> }
-                      </div>
+                     </div>
+                     <div className='rounded-lg bg-blue-400'>
+                      <MDBCol>
+                        <MDBRow>
+                          <div className="col-12 col-md-6 px-3 py-3">
+                            {/*create input for multiple */}
+                          </div>
+                        </MDBRow>
+                      </MDBCol>
+                     </div>
                     <div className='d-flex justify-content-end'>
                       <MDBBtn className='w-30 mb-4 mt-2' size='md' type='submit' >
                         Add Movie
