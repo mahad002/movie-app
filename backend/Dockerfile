@@ -1,5 +1,5 @@
-# Use the official Node.js 14 image
-FROM node:14
+# Use the official Node.js 18.18.0 image
+FROM node:18.18.0 as build
 
 # Set the working directory
 WORKDIR /app
