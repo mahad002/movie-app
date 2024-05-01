@@ -6,3 +6,6 @@
 .env
 /frontend/.env
 /backend/.env
+
+# Ignore docker-compose.yml
+docker-compose.yml
