@@ -1,23 +1,20 @@
-# Stage 1 - Build React application
-FROM node:14 as build
+# Use the official Node.js 18.18.0 image
+FROM node:18.18.0 as build
 
+# Set the working directory
 WORKDIR /app
 
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the application
 COPY . .
-RUN npm run build
-
-# Stage 2 - Production build with Nginx
-FROM nginx:alpine
-
-# Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
-
-# Copy built React app to Nginx directory
-COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose port
-EXPOSE 80
+EXPOSE 5000
 
-CMD ["nginx", "-g", "daemon off;"]
+# Command to run the backend server
+CMD ["npm", "start"]
