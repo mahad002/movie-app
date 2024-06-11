@@ -203,14 +203,15 @@ function MovieForm() {
   const handleAddProductionCompany = () => {
     console.log(newProductionCompany)
     if (newProductionCompany.name) {
-      const exists = productionCompaniesData.some(
+      const exists = movieData.productionCompanies.some(
         (company) => company.name === newProductionCompany.name
       );
       if (!exists) {
-        setProductionCompaniesData((prevData) => [
+        setMovieData(prevData => ({
           ...prevData,
-          { ...newProductionCompany, id: (prevData.length + 1).toString() },
-        ]);
+          productionCompanies: [...prevData.productionCompanies, newProductionCompany]
+        }));
+        console.log('Production Company added successfully:', movieData.productionCompanies);
         setNewProductionCompany({
           id: '',
           name: '',
