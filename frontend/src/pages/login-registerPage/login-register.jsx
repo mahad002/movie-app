@@ -23,7 +23,7 @@ function LoginRegister() {
   const [activeTab, setActiveTab] = useState('signup');
   const [user1,setUser1] = useState({username: "", password : "", role : "user", name: "", email: "", profilePicture: ""});
   const [message, setMessage] = useState(null);
-  // const authContext = useContext(AuthContext);
+  // const authContext = useContext(AuthContext); 
   const { user, setUser  } = useContext(AuthContext);
   let timerID = useRef(null);
   const navigate = useNavigate();   

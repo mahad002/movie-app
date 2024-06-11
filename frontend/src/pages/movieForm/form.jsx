@@ -1,9 +1,9 @@
-import { useState,useRef,useEffect,useContext } from 'react';
-import AuthServices from '../../services/AuthServices';
-import { AuthContext } from '../../Context/AuthContext';
+import { useState,useEffect } from 'react';
+// import AuthServices from '../../services/AuthServices';
+// import { AuthContext } from '../../Context/AuthContext';
 import Message from '../../components/Message';
-import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
+// import { useNavigate } from 'react-router-dom';
+// import DatePicker from 'react-datepicker';
 import {
   MDBBtn,
   MDBContainer,
@@ -25,6 +25,7 @@ const IMAGE_BASE_URL = import.meta.env.VITE_AWS_IMAGE_BASE_URL;
 function MovieForm() {
   const [backdropSpinner, setBackdropSpinner] = useState(false);
   const [posterSpinner, setPosterSpinner] = useState(false);
+  const [productionSpinner, setProductionSpinner] = useState(false);
   const [movieData, setMovieData] = useState({
     title: '',
     description: '',
@@ -61,9 +62,22 @@ function MovieForm() {
   const [productionCountriesData, setProductionCountriesData] = useState({
     name: ''
   });
+  // const [productionCompaniesData, setProductionCompaniesData] = useState({
+  //   id: '',
+  //   name: '',
+  //   logoPath: '',
+  //   originCountry: ''
+  // });
   const [genre_message, setGenreMessage] = useState(null);
   const [company_message, setCompanyMessage] = useState(null);
   const [country_message, setCountryMessage] = useState(null);
+  const [newProductionCompany, setNewProductionCompany] = useState({
+    id: '',
+    name: '',
+    logoPath: '',
+    originCountry: '',
+  });
+  
 
   useEffect(()=>{
     console.log(movieData)
@@ -71,12 +85,16 @@ function MovieForm() {
   },[movieData])
 
   const uploadImage = async (ev, pathToUpdate) => {
+    
+    console.log('Uploading image...');
     if (pathToUpdate === 'backdropPath') {
       setBackdropSpinner(true);
     } else if (pathToUpdate === 'posterPath') {
       setPosterSpinner(true);
+    } else if (pathToUpdate === 'logoPath') {
+      setProductionSpinner(true);
     }
-
+    console.log('Uploading image...');
     const file = ev.target?.files[0];
     if (file) {
       const data = new FormData();
@@ -86,11 +104,16 @@ function MovieForm() {
         const imageUrl = res.data.links[0].toString();
         console.log("Image uploaded successfully:", imageUrl);
         const imageName = imageUrl.split('/').pop();
-        setMovieData(prevData => ({
-          ...prevData,
-          [pathToUpdate]: imageName
-        }));
-        console.log("Image uploaded successfully:", `${IMAGE_BASE_URL}+${imageUrl}`);
+        if(pathToUpdate === 'logoPath'){
+          console.log('Logo uploaded successfully:', imageName)
+          setNewProductionCompany(prevData => ({ ...prevData, logoPath: `${imageName}` })); //${IMAGE_BASE_URL}+${imageUrl}
+        } else {
+          setMovieData(prevData => ({
+            ...prevData,
+            [pathToUpdate]: imageName
+          }));
+        }
+        console.log("Image uploaded successfully:", `${IMAGE_BASE_URL}${imageName}`);
       } catch (error) {
         console.error("Error uploading image:", error);
       } finally {
@@ -98,6 +121,8 @@ function MovieForm() {
           setBackdropSpinner(false);
         } else if (pathToUpdate === 'posterPath') {
           setPosterSpinner(false);
+        } else if (pathToUpdate === 'logoPath') {
+          setProductionSpinner(false);
         }
       }
     }
@@ -108,6 +133,9 @@ function MovieForm() {
       setMovieData(prevData => ({ ...prevData, backdropPath: '' }));
     } else if (imageType === 'poster') {
       setMovieData(prevData => ({ ...prevData, posterPath: '' }));
+    } else if (imageType == 'logoPath') {
+      setNewProductionCompany(prevData => ({ ...prevData, logoPath: '' }));
+      console.log('Logo removed');
     }
   };
 
@@ -162,9 +190,65 @@ function MovieForm() {
       } else {
         // Handle error or show message indicating already exists
         console.log('Production Country with the same name already exists!');
-        setGenreMessage('Production Country with the same name already exists!');
+        setCountryMessage('Production Country with the same name already exists!');
       }
     }
+  };
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewProductionCompany((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleAddProductionCompany = () => {
+    console.log(newProductionCompany)
+    if (newProductionCompany.name) {
+      const exists = productionCompaniesData.some(
+        (company) => company.name === newProductionCompany.name
+      );
+      if (!exists) {
+        setProductionCompaniesData((prevData) => [
+          ...prevData,
+          { ...newProductionCompany, id: (prevData.length + 1).toString() },
+        ]);
+        setNewProductionCompany({
+          id: '',
+          name: '',
+          logoPath: '',
+          originCountry: '',
+        });
+      } else {
+        console.log('Production Company with the same name already exists!');
+        setCompanyMessage('Production Company with the same name already exists!');
+      }
+    }
+  };
+
+  const removeImageProduction = () => {
+    setNewProductionCompany(prevData => ({ ...prevData, logoPath: '' }));
+  };  
+
+  const uploadMovieData = async (movieData) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/movie/upload`, movieData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.status === 200) {
+        console.log('Movie data uploaded successfully:', response.data);
+      } else {
+        console.error('Failed to upload movie data:', response.data);
+      }
+    } catch (error) {
+      console.error('Error uploading movie data:', error);
+    }
+  };
+  
+  // Usage: Call this function when the form is submitted
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    uploadMovieData(movieData);
   };
   
 
@@ -175,6 +259,7 @@ function MovieForm() {
 
   return (
     <MDBContainer fluid className='p-4'>
+      <form onSubmit={handleSubmit}>
       <h1 className="my-1 display-3 fw-bold ls-tight px-3 align-items-center">
             The best movie 
             <span className="text-primary"> database in the market!</span>
@@ -382,6 +467,7 @@ function MovieForm() {
                           />
                         </MDBCol>
                       </MDBRow>
+                      
                     <div className="image-div">
                         <div>
                           {/* Backdrop Image */}
@@ -511,36 +597,50 @@ function MovieForm() {
                       </div> }
                       </div>
                       <MDBRow className="mt-4">
-                    <MDBCol>
-                      <h5 className='text-black'>Genres</h5>
-                      <div className="genre-list">
-                        {movieData.genres.map((genre, index) => (
-                          <div key={index} className="genre-item text-black d-flex align-items-center">
-                            <span className="genre-id me-2">ID: {genre.id}</span>
-                            <span className="genre-name me-2">Name: {genre.name}</span>
-                            <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemoveProductionCountries(index)}>
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                              </svg>
-                            </button>
+                        <MDBCol>
+                          <h5 className='text-black'>Production Companies</h5>
+                          <div className="genre-list">
+                            {movieData.genres.map((genre, index) => (
+                              <div key={index} className="genre-item text-black d-flex align-items-center">
+                                <span className="genre-id me-2">ID: {genre.id}</span>
+                                <span className="genre-name me-2">Name: {genre.name}</span>
+                                <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemoveProductionCountries(index)}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                  </svg>
+                                </button>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                      <div className="d-flex align-items-center mt-2">
-                        <MDBInput
-                          label="Name"
-                          type="text"
-                          value={genreData.name}
-                          onChange={(e) => setProductionCountriesData(prevData => ({ ...prevData, name: e.target.value }))}
-                          className="me-2 genre-input-name"
-                        />
-                        {/* <div className='m-8'></div> */}
-                        <div className='d-flex justify-content-end'>
-                          <MDBBtn className="genre-button" size='md' color="primary" onClick={handleAddProductionCountries}>Add</MDBBtn>
-                        </div>
-                      </div>
-                    </MDBCol>
-                  </MDBRow>
+                          <div className="d-flex align-items-center mt-2 justify-space-evenly">
+                            <MDBInput
+                              label="ID"
+                              type="text"
+                              value={genreData.name}
+                              onChange={(e) => setNewProductionCompany(prevData => ({ ...prevData, id: e.target.value }))}
+                              className="me-2 genre-input-name"
+                            />
+                            <MDBInput
+                              label="Name"
+                              type="text"
+                              value={genreData.name}
+                              onChange={(e) => setNewProductionCompany(prevData => ({ ...prevData, name: e.target.value }))}
+                              className="me-2 genre-input-name"
+                            />
+                            <MDBInput
+                              label="Origin Country"
+                              type="text"
+                              value={genreData.name}
+                              onChange={(e) => setNewProductionCompany(prevData => ({ ...prevData, originCountry: e.target.value }))}
+                              className="me-2 genre-input-name"
+                            />
+                            
+                          </div>
+                          <div className='d-flex justify-content-end mt-5'>
+                              <MDBBtn className="genre-button" size='md' color="primary" onClick={handleAddProductionCountries}>Add</MDBBtn>
+                            </div>
+                        </MDBCol>
+                      </MDBRow>
                     <div>{country_message && 
                       <div className='company-message mt-2'>
                         <Message message={country_message} />
@@ -548,12 +648,116 @@ function MovieForm() {
                      </div>
                      <div className='rounded-lg bg-blue-400'>
                       <MDBCol>
-                        <MDBRow>
-                          <div className="col-12 col-md-6 px-3 py-3">
-                            {/*create input for multiple */}
+                      <MDBRow className="mt-4">
+                        <MDBCol>
+                          <h5 className='text-black'>Production Companies</h5>
+                          <div className="genre-list">
+                            {movieData.productionCompanies?.map((company, index) => (
+                              <div key={index} className="genre-item text-black d-flex align-items-center">
+                                <span className="genre-id me-2">ID: {company.id}</span>
+                                <span className="genre-name me-2">Name: {company.name}</span>
+                                <span className="genre-name me-2">Origin Country: {company.originCountry}</span>
+                                <img src={`${IMAGE_BASE_URL}${company.logoPath}`} alt={company.name} className="me-2" style={{ width: '50px', height: '50px' }} />
+                                <button className="btn btn-danger remove-genre-btn" onClick={() => removeImageProduction(company.id)}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                  </svg>
+                                </button>
+                              </div>
+                            ))}
                           </div>
-                        </MDBRow>
+                          <div className=" align-items-center mt-1">
+                            <MDBInput
+                              label="ID"
+                              type="text"
+                              name="id"
+                              value={newProductionCompany.id}
+                              onChange={handleInputChange}
+                              className="me-2 genre-input-name"
+                            />
+                            <MDBInput
+                              label="Name"
+                              type="text"
+                              name="name"
+                              value={newProductionCompany.name}
+                              onChange={handleInputChange}
+                              className="me-2 genre-input-name"
+                            />
+                            <MDBInput
+                              label="Logo Path"
+                              // type="text"
+                              name="logoPath"
+                              value={newProductionCompany.logoPath}
+                              onChange={handleInputChange}
+                              className="me-2 genre-input-name"
+                            />
+                            <MDBInput
+                              label="Origin Country"
+                              type="text"
+                              name="originCountry"
+                              value={newProductionCompany.originCountry}
+                              onChange={handleInputChange}
+                              className="me-2 genre-input-name"
+                            />
+                          </div>
+                          
+                        
+                          {company_message && 
+                            <div className='company-message mt-2'>
+                              <p>{company_message}</p>
+                            </div>
+                          }
+                        </MDBCol>
+                      </MDBRow>
                       </MDBCol>
+                      <div className="image-div">
+                          <div>
+                              {/* Production Logo Image */}
+                              {!!newProductionCompany.logoPath && (
+                                <div className="relative">
+                                  <div className='image-container'>
+                                    <button className="remove-button" onClick={() => removeImage('logoPath')}>
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 bg-red-600 rounded-lg p-1">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                      </svg> 
+                                    </button>
+                                    <img src={`${IMAGE_BASE_URL}${newProductionCompany?.logoPath}`} className="w-full h-full object-cover" alt="" />
+                                  </div>
+                                </div>
+                              )}
+                              {/* Production Spinner */}
+                              {productionSpinner && (
+                                    <div className="spinner-container bg-gray-100 flex items-center rounded-lg">
+                                      <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-gray-900">
+                                        <Spinner />
+                                      </div>
+                                    </div>
+                                  )}
+                              
+                              {/* Upload Buttons */}
+                              <label className="custom-label relative" htmlFor="upload-logo-input">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                                  />
+                                </svg>
+                                <div className="add-text">Add Production Logo</div>
+                                <input id="upload-logo-input" type="file" onChange={(ev) => uploadImage(ev, 'logoPath')} className="custom-file-input" />
+                              </label>
+                              </div>
+                          </div>
+                          <div className='d-flex justify-content-end mt-5'>
+                            <MDBBtn className="genre-button" size='md' color="primary" onClick={handleAddProductionCompany}>Add</MDBBtn>
+                          </div>
                      </div>
                     <div className='d-flex justify-content-end'>
                       <MDBBtn className='w-30 mb-4 mt-2' size='md' type='submit' >
@@ -565,6 +769,7 @@ function MovieForm() {
             </MDBCardBody>
           </MDBCard>
         </MDBCol>
+      </form>
   </MDBContainer>
   );
 }

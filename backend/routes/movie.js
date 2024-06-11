@@ -115,6 +115,23 @@ router.post('/postMovies/:type', async (req, res) => {
     }
 });
 
+router.post('/upload', async (req, res) => {
+    try {
+      const movieData = req.body;
+  
+      // Create a new movie instance
+      const newMovie = new Movie(movieData);
+  
+      // Save the movie to the database
+      await newMovie.save();
+  
+      res.status(200).json({ success: true, message: 'Movie saved successfully', movie: newMovie });
+    } catch (error) {
+      console.error('Error saving movie:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  });
+
 
 router.patch('/updateMovies/:id', async (req, res) => {
     try {
