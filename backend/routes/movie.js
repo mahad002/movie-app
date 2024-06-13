@@ -7,6 +7,7 @@ const Movie = require('../models/movie');
 const UserAuth = require('../middlewares/UserAuth');
 const Review = require('../models/review');
 const processMovieData = require('../middlewares/processMovieData');
+const { ObjectId } = require('mongoose').Types;
 
 const tmdb_api_key = process.env.TMDB_API_KEY;
 const base_url = process.env.BASE_URL;
@@ -63,7 +64,7 @@ router.get('/trailer/:id', async (req, res) => {
         res.status(200).json({ yt_trailer_vid });
     } catch(error) {
         // console.error(error);
-        res.status(404).json({ error: 'No Trailer!' });
+        res.status(404).json({ message: 'No Trailer!' });
     }
 });
 
@@ -225,23 +226,76 @@ router.post('/getAllMovies', async (req, res) => {
 
 
 router.post('/review/:movieId', UserAuth, async (req, res) => {
+    console.log(req.body);
+    console.log("Reviewing movie with ID:", req.params.movieId);
     try {
         const user = await User.findById(req.userId);
+        // console.log(user.toJSON());
 
-        const existingReview = user.reviews.find(review => review.movieId.toString() === req.params.movieId);
+        // Check if the user has already reviewed the movie
+        // const existingReview = user.reviews.find(review => review.authorDetails.username === user.username);
 
-        if (existingReview) {
+        // if (existingReview) {
+        //     return res.status(400).json({ error: 'You have already reviewed this movie.' });
+        // }
+
+        let movieId = req.params.movieId;
+        // movieId = new ObjectId(movieId)
+        // // Check if movieId is a valid ObjectId string
+        // const hexRegex = /[0-9A-Fa-f]{24}/g;
+        // console.log("movieId:", movieId);
+        // movieId = new ObjectId(movieId)
+        // console.log("hexRegex.test(movieId):", hexRegex.test(movieId));
+        // if (hexRegex.test(movieId)) {
+        //     console.log("Valid movieId format");
+        //     movieId = new ObjectId(movieId);
+        // } else {
+        //     console.log("Invalid movieId format");
+        //     return res.status(400).json({ error: 'Invalid movieId format.' });
+        // }
+        
+        // Associate the new review with the movie
+        const movie = await Movie.findOne({id: Number(movieId)});
+        if (!movie) {
+            return res.status(404).json({ error: 'Movie not found.' });
+        }
+        // console.log(movie.toJSON());
+        // console.log("movieId:", movieId);
+        // console.log("reviews:", movie.reviews);
+        // console.log("user:", user);
+        // Check if the user has already reviewed the movie
+        const hasReviewed = user.reviews.some(userReviewId => movie.reviews.some(movieReviewId => movieReviewId.equals(userReviewId)));
+        if (hasReviewed) {
             return res.status(400).json({ error: 'You have already reviewed this movie.' });
         }
+        // Create a new review object
+        const newReview = new Review({
+            // movieId: movieId,
+            author: user.username,  
+            authorDetails: {
+                name: user.name,  
+                username: user.username,
+                avatarPath: user.profilePicture,  
+                rating: parseInt(req.body.rating),  
+            },
+            content: req.body.comment,
+            // url: req.body.url, 
+        });
 
-        const newReview = {
-            movieId: req.params.movieId,
-            rating: req.body.rating,
-            comment: req.body.comment,
-        };
+        // Save the new review
+        await newReview.save();
 
+        // console.log(movie.toJSON());
+
+        movie.reviews.push(newReview);  
+        await movie.save();
+
+        // Push the new review into the user's reviews array (optional)
         user.reviews.push(newReview);
+
+        // Save the updated user document (optional)
         await user.save();
+
         res.status(201).json({ message: 'Review added successfully.' });
     } catch (error) {
         console.error(error);

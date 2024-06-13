@@ -30,9 +30,9 @@ export default {
       console.log("res.data: ", res.data);
       if (res.data && res.data.token) {
         localStorage.setItem('userToken', res.data.token); // Store the authentication token in localStorage
-        setCookie('userToken', res.data.token, 7); // Store the token in a cookie for 7 days
+        setCookie('userToken', res.data.token, 7); // Store the authentication token in a cookie for 7 days
         
-        const { password, ...safeUserData } = res.data.user;
+        const { ...safeUserData } = res.data.user;
         localStorage.setItem('userInfo', JSON.stringify(safeUserData)); // Store user info in localStorage
         setCookie('userInfo', JSON.stringify(safeUserData), 7); // Store user info in a cookie for 7 days
       }

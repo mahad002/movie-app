@@ -63,12 +63,6 @@ function MovieForm() {
   const [production_countriesData, setproduction_countriesData] = useState({
     name: ''
   });
-  // const [production_companiesData, setproduction_companiesData] = useState({
-  //   id: '',
-  //   name: '',
-  //   logoPath: '',
-  //   originCountry: ''
-  // });
   const [genre_message, setGenreMessage] = useState(null);
   const [company_message, setCompanyMessage] = useState(null);
   const [country_message, setCountryMessage] = useState(null);

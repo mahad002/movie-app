@@ -37,7 +37,7 @@ const Movie = () => {
              .then((response) => response.data)
              .then((data) => {
                     setTrailer(data);
-                    // console.log(data);
+                    console.log(data);
                 })
     }
 

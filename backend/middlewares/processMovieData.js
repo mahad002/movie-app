@@ -1,7 +1,7 @@
 const processMovieData = (req, res, next) => {
     try {
       const data = req.body;
-      console.log("DATA: ",data);
+      // console.log("DATA: ",data);
       // Convert specific fields to numbers
       data.id = Number(data.id);
       data.popularity = Number(data.popularity);

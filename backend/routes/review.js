@@ -1,8 +1,12 @@
 // Assuming you are using Express.js
 const express = require('express');
 const router = express.Router();
-const Review = require('../models/review'); // Adjust the path accordingly
-const getReviewById = require('../middlewares/GetReviewById'); // Adjust the path accordingly
+const Review = require('../models/review'); 
+const Movie = require('../models/movie'); 
+const User = require('../models/user');
+const getReviewById = require('../middlewares/GetReviewById'); 
+const { parse } = require('dotenv');
+const { ObjectId } = require('mongoose').Types;
 
 // Endpoint to get all reviews
 router.get('/', async (req, res) => {
@@ -11,6 +15,41 @@ router.get('/', async (req, res) => {
         res.json(reviews);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// Endpoint to get reviews by movie ID
+router.get('/movie/:movieId', async (req, res) => {
+    try {
+        const movieId = req.params.movieId;
+
+        // Find the movie by its ID and populate the 'reviews' field
+        const movie = await Movie.findOne({ id: movieId });
+
+        // console.log(movie.reviews);
+
+        let reviews = [];
+
+        for (let i = 0; i < movie.reviews.length; i++) {
+            const review = await Review.findById(movie.reviews[i]);
+            reviews[i] = review;
+        }
+
+        // console.log(reviews);
+
+        if (!movie) {
+            return res.status(404).json({ error: 'Movie not found' });
+        }
+
+        let movieWithReviews = {
+            movie,
+            results: reviews
+        };
+
+        res.json(movieWithReviews);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
@@ -41,7 +80,7 @@ async function getReview(req, res, next) {
     let review;
     try {
         review = await Review.findById(req.params.id);
-        if (review == null) {
+        if (!review) {
             return res.status(404).json({ message: 'Review not found' });
         }
     } catch (error) {
@@ -54,20 +93,14 @@ async function getReview(req, res, next) {
 
 // Endpoint to update a review by ID
 router.patch('/:id', getReview, async (req, res) => {
-    if (req.body.author != null) {
-        res.review.author = req.body.author;
+    const { content, authorDetails } = req.body.review;
+    console.log('Updating review:', res.review);
+    if (content) {
+        res.review.content = content;
     }
 
-    if (req.body.authorDetails != null) {
-        res.review.authorDetails = req.body.authorDetails;
-    }
-
-    if (req.body.content != null) {
-        res.review.content = req.body.content;
-    }
-
-    if (req.body.url != null) {
-        res.review.url = req.body.url;
+    if (authorDetails && authorDetails.rating) {
+        res.review.authorDetails.rating = authorDetails.rating;
     }
 
     try {
@@ -79,11 +112,49 @@ router.patch('/:id', getReview, async (req, res) => {
 });
 
 // Endpoint to delete a review by ID
-router.delete('/:id', getReview, async (req, res) => {
+router.delete('/:id', async (req, res) => {
+    const reviewId = req.params.id;
+    let { userId, movieId } = req.body;
+    userId = new ObjectId(userId);
+    movieId = Number(movieId);
+    console.log('Deleting review:', reviewId);
+
     try {
-        await res.review.remove();
+        console.log('Im here!');
+        // Fetch the user and remove the review from their reviews array
+        const user = await User.findById(userId);
+        if (user) {
+            console.log('user:', user.reviews);
+            user.reviews.pull(reviewId);
+            await user.save();
+            console.log('Updated user:', user.reviews);
+        } else {
+            console.log('User not found');
+        }
+
+        // Fetch the movie and remove the review from their reviews array
+        const movie = await Movie.findOne({id: movieId});
+        // console.log('movie:', movie);
+        if (movie) {
+            console.log('movie:', movie.reviews);
+            movie.reviews.pull(reviewId);
+            await movie.save();
+            console.log('Updated movie:', movie.reviews);
+        }
+        else {
+            console.log('Movie not found');
+        }
+
+        // Delete the review
+        const review = await Review.findByIdAndDelete(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        // console.log('Deleted review:', review);
         res.json({ message: 'Review deleted' });
     } catch (error) {
+        console.error('Error deleting review:', error);
         res.status(500).json({ message: error.message });
     }
 });

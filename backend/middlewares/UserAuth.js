@@ -5,10 +5,11 @@ require('dotenv').config();
 const secret = process.env.SECRET;
 
 const UserAuth = async (req, res, next) => {
+    console.log('UserAuth middleware');
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
         const decoded = jwt.verify(token, process.env.SECRET);
-
+        // console.log('decoded: ', decoded);
         const user = await UserModel.findOne({ _id: decoded.userId });
 
         if (!user) {
