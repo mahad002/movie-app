@@ -6,6 +6,7 @@ const User = require('../models/user');
 const Movie = require('../models/movie');
 const UserAuth = require('../middlewares/UserAuth');
 const Review = require('../models/review');
+const processMovieData = require('../middlewares/processMovieData');
 
 const tmdb_api_key = process.env.TMDB_API_KEY;
 const base_url = process.env.BASE_URL;
@@ -115,10 +116,12 @@ router.post('/postMovies/:type', async (req, res) => {
     }
 });
 
-router.post('/upload', async (req, res) => {
+router.post('/upload', processMovieData, async (req, res) => {
+    console.log(req.body);
     try {
       const movieData = req.body;
-  
+      console.log(movieData);
+      
       // Create a new movie instance
       const newMovie = new Movie(movieData);
   
@@ -127,6 +130,7 @@ router.post('/upload', async (req, res) => {
   
       res.status(200).json({ success: true, message: 'Movie saved successfully', movie: newMovie });
     } catch (error) {
+      console.error('Error saving movie:', req.body);
       console.error('Error saving movie:', error);
       res.status(500).json({ success: false, message: 'Internal Server Error' });
     }

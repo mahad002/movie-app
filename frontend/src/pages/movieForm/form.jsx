@@ -27,27 +27,28 @@ function MovieForm() {
   const [posterSpinner, setPosterSpinner] = useState(false);
   const [productionSpinner, setProductionSpinner] = useState(false);
   const [movieData, setMovieData] = useState({
+    id: null,
     title: '',
     description: '',
-    releaseDate: '',
-    backdropPath: '',
-    posterPath: '',
+    release_date: '',
+    backdrop_path: '',
+    poster_path: '',
     adult: false,
     genreIds: [],
-    originalLanguage: '',
-    originalTitle: '',
+    original_language: '',
+    original_title: '',
     overview: '',
     popularity: null,
     video: false, //I checked the Tmbd Database and every movie has video as false so I'm considering it as false
-    voteAverage: null,
-    voteCount: null,
+    vote_average: null,
+    vote_count: null,
     belongsToCollection: {}, //
     budget: null,
     genres: [],
     homepage: '',
     imdbId: '',
-    productionCompanies: [], // 
-    productionCountries: [], //
+    production_companies: [], // 
+    production_countries: [], //
     revenue: null,
     runtime: null,
     spokenLanguages: [], //
@@ -59,10 +60,10 @@ function MovieForm() {
     id: '',
     name: ''
   });
-  const [productionCountriesData, setProductionCountriesData] = useState({
+  const [production_countriesData, setproduction_countriesData] = useState({
     name: ''
   });
-  // const [productionCompaniesData, setProductionCompaniesData] = useState({
+  // const [production_companiesData, setproduction_companiesData] = useState({
   //   id: '',
   //   name: '',
   //   logoPath: '',
@@ -87,9 +88,9 @@ function MovieForm() {
   const uploadImage = async (ev, pathToUpdate) => {
     
     console.log('Uploading image...');
-    if (pathToUpdate === 'backdropPath') {
+    if (pathToUpdate === 'backdrop_path') {
       setBackdropSpinner(true);
-    } else if (pathToUpdate === 'posterPath') {
+    } else if (pathToUpdate === 'poster_path') {
       setPosterSpinner(true);
     } else if (pathToUpdate === 'logoPath') {
       setProductionSpinner(true);
@@ -117,9 +118,9 @@ function MovieForm() {
       } catch (error) {
         console.error("Error uploading image:", error);
       } finally {
-        if (pathToUpdate === 'backdropPath') {
+        if (pathToUpdate === 'backdrop_path') {
           setBackdropSpinner(false);
-        } else if (pathToUpdate === 'posterPath') {
+        } else if (pathToUpdate === 'poster_path') {
           setPosterSpinner(false);
         } else if (pathToUpdate === 'logoPath') {
           setProductionSpinner(false);
@@ -130,9 +131,9 @@ function MovieForm() {
 
   const removeImage = (imageType) => {
     if (imageType === 'backdrop') {
-      setMovieData(prevData => ({ ...prevData, backdropPath: '' }));
+      setMovieData(prevData => ({ ...prevData, backdrop_path: '' }));
     } else if (imageType === 'poster') {
-      setMovieData(prevData => ({ ...prevData, posterPath: '' }));
+      setMovieData(prevData => ({ ...prevData, poster_path: '' }));
     } else if (imageType == 'logoPath') {
       setNewProductionCompany(prevData => ({ ...prevData, logoPath: '' }));
       console.log('Logo removed');
@@ -147,13 +148,6 @@ function MovieForm() {
     }));
   };
 
-  const handleRemoveProductionCountries = (index) => {
-    const updatedProductionCompanies = movieData.productionCountries.filter((genre, i) => i !== index);
-    setMovieData(prevData => ({
-      ...prevData,
-      productionCompanies: updatedProductionCompanies
-    }));
-  };
 
   const handleAddGenre = () => {
     if (genreData.id && genreData.name) {
@@ -177,24 +171,48 @@ function MovieForm() {
     }
   };
 
-  const handleAddProductionCountries = () => {
-    if (productionCountriesData.name) {
-      // Check if ID or name already exists in genres array
-      const exists = movieData.productionCountries.some(productionCountries => productionCountries.name === productionCountriesData.name);
-      if (!exists) {
-        setMovieData(prevData => ({
-          ...prevData,
-          productionCountries: [...prevData.productionCountries, { name: productionCountriesData.name }]
-        }));
-        setProductionCountriesData({ name: '' });
-      } else {
-        // Handle error or show message indicating already exists
-        console.log('Production Country with the same name already exists!');
-        setCountryMessage('Production Country with the same name already exists!');
+  const removeproduction_countries = (i) => {
+    setMovieData(prevState => {
+      if (!Array.isArray(prevState.production_countries)) {
+        console.error('production_countries is not an array');
+        return prevState;
       }
-    }
+
+      if (i < 0 || i >= prevState.production_countries.length) {
+        console.error('Index out of bounds');
+        return prevState;
+      }
+
+      const newproduction_countries = [...prevState.production_countries];
+      newproduction_countries.splice(i, 1);
+
+      return {
+        ...prevState,
+        production_countries: newproduction_countries
+      };
+    });
   };
+
+  const handleAddproduction_countries = () => {
+    if (!production_countriesData.name) {
+      setCountryMessage('Production country name cannot be empty');
+      console.error('Production country name cannot be empty');
+      return;
+    }
   
+    setMovieData(prevState => ({
+      ...prevState,
+      production_countries: [...prevState.production_countries, production_countriesData]
+    }));
+    setCountryMessage('');
+    setproduction_countriesData({ name: '' });
+  };
+
+  const handleRemoveproduction_countries = (index) => {
+    removeproduction_countries(index);
+  };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewProductionCompany((prevData) => ({ ...prevData, [name]: value }));
@@ -203,15 +221,15 @@ function MovieForm() {
   const handleAddProductionCompany = () => {
     console.log(newProductionCompany)
     if (newProductionCompany.name) {
-      const exists = movieData.productionCompanies.some(
+      const exists = movieData.production_companies.some(
         (company) => company.name === newProductionCompany.name
       );
       if (!exists) {
         setMovieData(prevData => ({
           ...prevData,
-          productionCompanies: [...prevData.productionCompanies, newProductionCompany]
+          production_companies: [...prevData.production_companies, newProductionCompany]
         }));
-        console.log('Production Company added successfully:', movieData.productionCompanies);
+        console.log('Production Company added successfully:', movieData.production_companies);
         setNewProductionCompany({
           id: '',
           name: '',
@@ -225,11 +243,33 @@ function MovieForm() {
     }
   };
 
-  const removeImageProduction = () => {
-    setNewProductionCompany(prevData => ({ ...prevData, logoPath: '' }));
-  };  
+  const removeProduction = (i) => {
+    setMovieData(prevState => {
+      console.log('Removing production company at index:', i);
+      console.log('Production Companies before removal:', movieData.production_companies);
+      // Make a shallow copy of the production_companies array
+      const newproduction_companies = [...prevState.production_companies];
+      // Remove the item at the specified index
+      if (i >= 0 && i < newproduction_companies.length) {
+        newproduction_companies.splice(i, 1);
+      } else {
+        console.error('Index out of bounds');
+      }
+      console.log('Production Companies after removal:', newproduction_companies);
+      // Return the new state
+      return {
+        ...prevState,
+        production_companies: newproduction_companies
+      };
+    });
+  };
+
+  const handleRemove = (index) => {
+    removeProduction(index);
+  };
 
   const uploadMovieData = async (movieData) => {
+    console.log('Uploading movie data:', movieData)
     try {
       const response = await axios.post(`${BASE_URL}/movie/upload`, movieData, {
         headers: {
@@ -249,13 +289,14 @@ function MovieForm() {
   // Usage: Call this function when the form is submitted
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('Submitting form...');
     uploadMovieData(movieData);
   };
   
 
-  // const handleReleaseDate = (e) => {
-  //   setMovieData(prevData => ({ ...prevData, releaseDate: e.target.value }));
-  //   console.log(movieData.releaseDate)
+  // const handlerelease_date = (e) => {
+  //   setMovieData(prevData => ({ ...prevData, release_date: e.target.value }));
+  //   console.log(movieData.release_date)
   // };
 
   return (
@@ -271,7 +312,23 @@ function MovieForm() {
             <MDBCardBody className='p-4'>
               <div className='mt-2'>
                   <div>
-                    <MDBRow className='mt-4'>
+                    
+                    <MDBRow className=''>
+                      <MDBRow className='flex-row '>
+                        <MDBCol>
+                          <label htmlFor="id" className="block text-sm font-small text-gray-700">
+                            <MDBInput
+                              wrapperClass='mb-2'
+                              label='ID'
+                              id='id'
+                              type='number'
+                              name='id'
+                              value={movieData.id}
+                              onChange={(e) => setMovieData(prevData => ({ ...prevData, id: e.target.value }))}
+                            />
+                          </label>
+                        </MDBCol>
+                        </MDBRow>
                         <MDBCol col='6'>
                           <MDBInput
                             wrapperClass='mb-4'
@@ -290,8 +347,8 @@ function MovieForm() {
                               icon="calendar-alt"
                               hint="Release date"
                               type="date"
-                              value={movieData.releaseDate}
-                              onChange={(e)=>{setMovieData(prevData => ({ ...prevData, releaseDate: e.target.value }));}}
+                              value={movieData.release_date}
+                              onChange={(e)=>{setMovieData(prevData => ({ ...prevData, release_date: e.target.value }));}}
                               required
                               className="w-1/2 border border-gray-300 rounded-md"
                               data-twe-disabled="true"
@@ -310,20 +367,6 @@ function MovieForm() {
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, description: e.target.value }))}
                           />
                         </MDBCol>
-                      {/* <MDBRow className=''>
-                        <MDBCol>
-                          <MDBInput
-                            selected={movieData.releaseDate}
-                            wrapperClass=''
-                            label='Genre'
-                            id='genre'
-                            type='text'
-                            name='genre'
-                            value={movieData.genre}
-                            onChange={(e) => setMovieData(prevData => ({ ...prevData, genre: e.target.value }))}
-                          />
-                        </MDBCol>
-                      </MDBRow> */}
                       <MDBRow className='flex-row'>
                         <MDBCol>
                           <label htmlFor="Adult" className="block text-sm font-small text-gray-700">
@@ -363,16 +406,16 @@ function MovieForm() {
                           <MDBInput
                             wrapperClass='mb-4'
                             label="Original Language"
-                            name="originalLanguage"
-                            value={movieData.originalLanguage}
-                            onChange={(e) => setMovieData(prevData => ({ ...prevData, originalLanguage: e.target.value }))}
+                            name="original_language"
+                            value={movieData.original_language}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, original_language: e.target.value }))}
                           />
                           <MDBInput
                             wrapperClass='mb-4'
                             label="Original Title"
-                            name="originalTitle"
-                            value={movieData.originalTitle}
-                            onChange={(e) => setMovieData(prevData => ({ ...prevData, originalTitle: e.target.value }))}
+                            name="original_title"
+                            value={movieData.original_title}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, original_title: e.target.value }))}
                           />
                           <MDBInput
                             wrapperClass='mb-4'
@@ -430,17 +473,17 @@ function MovieForm() {
                             wrapperClass='mb-4'
                             label="Vote Average"
                             type="number"
-                            name="voteAverage"
-                            value={movieData.voteAverage}
-                            onChange={(e) => setMovieData(prevData => ({ ...prevData, voteAverage: e.target.value }))}
+                            name="vote_average"
+                            value={movieData.vote_average}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, vote_average: e.target.value }))}
                           />
                           <MDBInput
                             wrapperClass='mb-4'
                             label="Vote Count"
                             type="number"
-                            name="voteCount"
-                            value={movieData.voteCount}
-                            onChange={(e) => setMovieData(prevData => ({ ...prevData, voteCount: e.target.value }))}
+                            name="vote_count"
+                            value={movieData.vote_count}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, vote_count: e.target.value }))}
                           />
                           <MDBInput
                             wrapperClass='mb-4'
@@ -472,7 +515,7 @@ function MovieForm() {
                     <div className="image-div">
                         <div>
                           {/* Backdrop Image */}
-                          {!!movieData.backdropPath && (
+                          {!!movieData.backdrop_path && (
                             <div className="relative">
                               <div className='image-container'>
                                 <button className="remove-button" onClick={() => removeImage('backdrop')}>
@@ -480,7 +523,7 @@ function MovieForm() {
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                   </svg> 
                                 </button>
-                                <img src={`${IMAGE_BASE_URL}${movieData.backdropPath}`} className="w-full h-full object-cover" alt="" />
+                                <img src={`${IMAGE_BASE_URL}${movieData.backdrop_path}`} className="w-full h-full object-cover" alt="" />
                               </div>
                             </div>
                           )}
@@ -510,12 +553,12 @@ function MovieForm() {
                               />
                             </svg>
                             <div className="add-text">Add Backdrop</div>
-                            <input id="upload-backdrop-input" type="file" onChange={(ev) => uploadImage(ev, 'backdropPath')} className="custom-file-input" />
+                            <input id="upload-backdrop-input" type="file" onChange={(ev) => uploadImage(ev, 'backdrop_path')} className="custom-file-input" />
                           </label>
                       </div>
                       <div>
                         {/* Poster Image */}
-                        {!!movieData.posterPath && (
+                        {!!movieData.poster_path && (
                           <div className="relative">
                             <div className='image-container'>
                               <button className="remove-button" onClick={() => removeImage('poster')}>
@@ -523,7 +566,7 @@ function MovieForm() {
                                   <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                 </svg> 
                               </button>
-                              <img src={`${IMAGE_BASE_URL}${movieData.posterPath}`} className="w-full h-full object-cover" alt="" />
+                              <img src={`${IMAGE_BASE_URL}${movieData.poster_path}`} className="w-full h-full object-cover" alt="" />
                             </div>
                           </div>
                         )}
@@ -551,7 +594,7 @@ function MovieForm() {
                             />
                           </svg>
                           <div className="add-text">Add Poster</div>
-                          <input id="upload-poster-input" type="file" onChange={(ev) => uploadImage(ev, 'posterPath')} className="custom-file-input" />
+                          <input id="upload-poster-input" type="file" onChange={(ev) => uploadImage(ev, 'poster_path')} className="custom-file-input" />
                         </label>
                       </div>
                     </div>
@@ -599,13 +642,12 @@ function MovieForm() {
                       </div>
                       <MDBRow className="mt-4">
                         <MDBCol>
-                          <h5 className='text-black'>Production Companies</h5>
+                          <h5 className='text-black'>Production Countries</h5>
                           <div className="genre-list">
-                            {movieData.genres.map((genre, index) => (
+                            {movieData.production_countries.map((country, index) => (
                               <div key={index} className="genre-item text-black d-flex align-items-center">
-                                <span className="genre-id me-2">ID: {genre.id}</span>
-                                <span className="genre-name me-2">Name: {genre.name}</span>
-                                <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemoveProductionCountries(index)}>
+                                <span className="genre-name me-2">Name: {country.name}</span>
+                                <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemoveproduction_countries(index)}>
                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                   </svg>
@@ -615,31 +657,16 @@ function MovieForm() {
                           </div>
                           <div className="d-flex align-items-center mt-2 justify-space-evenly">
                             <MDBInput
-                              label="ID"
-                              type="text"
-                              value={genreData.name}
-                              onChange={(e) => setNewProductionCompany(prevData => ({ ...prevData, id: e.target.value }))}
-                              className="me-2 genre-input-name"
-                            />
-                            <MDBInput
                               label="Name"
                               type="text"
-                              value={genreData.name}
-                              onChange={(e) => setNewProductionCompany(prevData => ({ ...prevData, name: e.target.value }))}
+                              value={production_countriesData.name}
+                              onChange={(e) => setproduction_countriesData({ name: e.target.value })}
                               className="me-2 genre-input-name"
                             />
-                            <MDBInput
-                              label="Origin Country"
-                              type="text"
-                              value={genreData.name}
-                              onChange={(e) => setNewProductionCompany(prevData => ({ ...prevData, originCountry: e.target.value }))}
-                              className="me-2 genre-input-name"
-                            />
-                            
                           </div>
                           <div className='d-flex justify-content-end mt-5'>
-                              <MDBBtn className="genre-button" size='md' color="primary" onClick={handleAddProductionCountries}>Add</MDBBtn>
-                            </div>
+                            <MDBBtn className="genre-button" size='md' color="primary" onClick={handleAddproduction_countries}>Add</MDBBtn>
+                          </div>
                         </MDBCol>
                       </MDBRow>
                     <div>{country_message && 
@@ -653,13 +680,13 @@ function MovieForm() {
                         <MDBCol>
                           <h5 className='text-black'>Production Companies</h5>
                           <div className="genre-list">
-                            {movieData.productionCompanies?.map((company, index) => (
+                            {movieData.production_companies?.map((company, index) => (
                               <div key={index} className="genre-item text-black d-flex align-items-center">
                                 <span className="genre-id me-2">ID: {company.id}</span>
                                 <span className="genre-name me-2">Name: {company.name}</span>
                                 <span className="genre-name me-2">Origin Country: {company.originCountry}</span>
                                 <img src={`${IMAGE_BASE_URL}${company.logoPath}`} alt={company.name} className="me-2" style={{ width: '50px', height: '50px' }} />
-                                <button className="btn btn-danger remove-genre-btn" onClick={() => removeImageProduction(company.id)}>
+                                <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemove(index)}>
                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                   </svg>

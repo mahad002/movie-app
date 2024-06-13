@@ -1,6 +1,5 @@
 import './login-register.css';
-// import React from 'react';
-import { useState,useRef,useEffect,useContext } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import AuthServices from '../../services/AuthServices';
 import { AuthContext } from '../../Context/AuthContext';
 import Message from '../../components/Message';
@@ -13,113 +12,84 @@ import {
   MDBCard,
   MDBCardBody,
   MDBInput,
-  // MDBCheckbox,
-  // MDBIcon  
 } from 'mdb-react-ui-kit';
 import axios from 'axios';
 import Spinner from '../../components/spinner/spinner';
 
 function LoginRegister() {
   const [activeTab, setActiveTab] = useState('signup');
-  const [user1,setUser1] = useState({username: "", password : "", role : "user", name: "", email: "", profilePicture: ""});
+  const [user1, setUser1] = useState({ username: "", password: "", role: "user", name: "", email: "", profilePicture: "" });
   const [message, setMessage] = useState(null);
-  // const authContext = useContext(AuthContext); 
-  const { user, setUser  } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   let timerID = useRef(null);
-  const navigate = useNavigate();   
+  const navigate = useNavigate();
   const [spinner, setSpinner] = useState(false);
   const [image, setImage] = useState();
-
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-
-    useEffect(()=>{
-        return ()=>{
-            clearTimeout(timerID);
-        }
-    },[activeTab]);
-
-    const onChange = e =>{
-        setUser1({...user1,[e.target.name] : e.target.value});
+  useEffect(() => {
+    return () => {
+      clearTimeout(timerID);
     }
+  }, [activeTab]);
 
-    const resetForm = ()=>{
-        setUser1({username : "", password : "",role : "", name: "", email: "", profilePicture: ""});
+  const onChange = e => {
+    setUser1({ ...user1, [e.target.name]: e.target.value });
+  }
+
+  const resetForm = () => {
+    setUser1({ username: "", password: "", role: "user", name: "", email: "", profilePicture: "" });
+  }
+
+  const onSubmit = e => {
+    e.preventDefault();
+    if (user1.profilePicture === "") {
+      user1.profilePicture = "https://movie-webapp.s3.ap-south-1.amazonaws.com/1710577341001.jpg";
     }
-
-    const onSubmit = e =>{
-        e.preventDefault();
-        if(user1.profilePicture === ""){
-          user1.profilePicture = "https://movie-webapp.s3.ap-south-1.amazonaws.com/1710577341001.jpg";
-        }
-        AuthServices.register(user1).then(data=>{
-            const { message } = data;
-            setMessage(message);
-            console.log("MESSAGE: ",message);
-            resetForm();
-            if(!message.msgError){
-                timerID = setTimeout(()=>{
-                    // resetForm();
-                    // setActiveTab('login');
-                    AuthServices.login(user1).then(data=>{
-                      console.log(data);
-                      // console.log("USER: ",user);
-                      console.log("DATA: ",AuthContext);
-                      const { isAuthenticated,message, token} = data;
-                      console.log("TOKEN: ",token);
-                      // setIsAuthenticated(isAuthenticated);
-                      setUser(user);
-                      // console.log("USER: ",user);
-                      // AuthContext.setUser(user);
-                      // AuthContext.setToken(token);
-                      // AuthContext.setMessage(message);
-
-                      console.log("ISAUTHENTICATED: ",isAuthenticated);
-                      console.log("USER: ",user);
-                      console.log("MESSAGE: ",message);
-                      if(isAuthenticated){
-                          // authContext.setUser(user);
-                          // authContext.setIsAuthenticated(isAuthenticated);
-                          setMessage(message);
-                          console.log("MESSAGE: ",message);
-                          setTimeout(()=>{
-                            navigate(`/profile/${user.username}`, { replace: true });
-                          },3000)
-                      }
-                      else
-                          setMessage(message);
-                          console.log("MESSAGE: ",message);
-                          setTimeout(()=>{
-                            navigate(`/`);
-                          },3000)
-                  });
-                },2000)
+    AuthServices.register(user1).then(data => {
+      const { message } = data;
+      setMessage(message);
+      resetForm();
+      if (!message.msgError) {
+        timerID = setTimeout(() => {
+          AuthServices.login(user1).then(data => {
+            const { isAuthenticated, message, token } = data;
+            setUser(user);
+            if (isAuthenticated) {
+              setMessage(message);
+              setTimeout(() => {
+                navigate(`/profile/${user.username}`, { replace: true });
+              }, 3000)
+            } else {
+              setMessage(message);
+              setTimeout(() => {
+                navigate(`/`);
+              }, 3000)
             }
-        });
-    }
+          });
+        }, 2000)
+      }
+    });
+  }
 
-    const onSubmit1 = e =>{
-      e.preventDefault();
-      AuthServices.login(user1).then(data=>{
-          console.log(data);
-          const { isAuthenticated,user,message} = data;
-          if(isAuthenticated){
-              setUser(user);
-              // setIsAuthenticated(isAuthenticated);
-              setMessage(message);
-              console.log("MESSAGE: ",message);
-              setTimeout(()=>{
-                navigate('/');
-              },3000)
-          }
-          else
-              setMessage(message);
-              console.log("MESSAGE: ",message);
-              setTimeout(()=>{
-                navigate('/');
-              },3000)
-      });
-    }
+  const onSubmit1 = e => {
+    e.preventDefault();
+    AuthServices.login(user1).then(data => {
+      const { isAuthenticated, user, message } = data;
+      if (isAuthenticated) {
+        setUser(user);
+        setMessage(message);
+        setTimeout(() => {
+          navigate('/');
+        }, 3000)
+      } else {
+        setMessage(message);
+        setTimeout(() => {
+          navigate('/');
+        }, 3000)
+      }
+    });
+  }
 
   const toggleTab = (tab) => {
     if (activeTab !== tab) {
@@ -130,18 +100,14 @@ function LoginRegister() {
   const uploadImage = async (ev) => {
     setImage('');
     const file = ev.target?.files[0];
-    console.log("FILE: ", file);
     if (file) {
       setSpinner(true);
       const data = new FormData();
       data.append("file", file);
-      console.log(data);
       try {
         const res = await axios.post(`${BASE_URL}/upload/`, data);
-        setImage([res.data.links]); 
-        console.log("IMAGE: ", res.data.links[0].toString());
+        setImage([res.data.links]);
         user1.profilePicture = String(res.data.links[0]);
-        console.log("USER Picture: ", user1.profilePicture);
       } catch (error) {
         console.error("Error uploading image:", error);
       } finally {
@@ -153,31 +119,29 @@ function LoginRegister() {
   const removeImage = () => {
     setImage('');
   };
-  
 
   return (
     <MDBContainer fluid className='p-4'>
-        <h1 className="my-1 display-3 fw-bold ls-tight px-3 align-items-center">
-            The best movie 
-            <span className="text-primary"> database in the market!</span>
-          </h1>
+      <h1 className="my-1 display-3 fw-bold ls-tight px-3 align-items-center">
+        The best movie 
+        <span className="text-primary"> database in the market!</span>
+      </h1>
       <MDBRow>
-      <MDBCol md='6'>
+        <MDBCol md='6'>
           <MDBCard className='card1 my-5'>
             <MDBCardBody className='p-4'>
               <ul className="nav nav-tabs">
                 <li className="nav-item">
-                  <a className={`nav-link ${activeTab === 'signup' ? 'active' : ''} bg-transaprent`} onClick={() => toggleTab('signup')}>
+                  <a className={`nav-link ${activeTab === 'signup' ? 'active' : ''} bg-transparent`} onClick={() => toggleTab('signup')}>
                     Sign Up
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className={`nav-link ${activeTab === 'login' ? 'active' : ''}bg-transaprent`} onClick={() => toggleTab('login')}>
+                  <a className={`nav-link ${activeTab === 'login' ? 'active' : ''} bg-transparent`} onClick={() => toggleTab('login')}>
                     Login
                   </a>
                 </li>
               </ul>
-
               <div className='mt-2'>
                 {activeTab === 'signup' && (
                   <div>
@@ -188,7 +152,7 @@ function LoginRegister() {
                           label='Full name'
                           id='fullName'
                           type='text'
-                          name='name' // Add name attribute for identification
+                          name='name'
                           value={user1.name}
                           onChange={onChange}
                         />
@@ -265,8 +229,6 @@ function LoginRegister() {
                         <input id="upload-input" type="file" onChange={uploadImage} className="custom-file-input" />
                       </label>
                     </div>
-
-
                     <div className='d-flex justify-content-end'>
                       <MDBBtn className='w-30 mb-4 mt-2' size='md' type='submit' onClick={onSubmit}>
                         Sign Up
@@ -274,48 +236,46 @@ function LoginRegister() {
                     </div>
                   </div>
                 )}
-
                 {activeTab === 'login' && (
                   <div>
                     <MDBRow className='justify-content-center mt-4'>
-                        <MDBCol md='8'>
-                        <MDBInput 
-                          wrapperClass='mb-4' 
-                          label='username' 
-                          id='form1' 
-                          type='username' 
-                          className='custom-width-input' 
-                          value = {user1.username}
-                          onChange= {onChange}
+                      <MDBCol md='8'>
+                        <MDBInput
+                          wrapperClass='mb-4'
+                          label='Username'
+                          id='loginUsername'
+                          type='text'
+                          name='username'
+                          value={user1.username}
+                          onChange={onChange}
                         />
-                        </MDBCol>
+                      </MDBCol>
                     </MDBRow>
                     <MDBRow className='justify-content-center'>
-                        <MDBCol md='8'>
-                        <MDBInput 
-                          wrapperClass='mb-4' 
-                          label='Password' 
-                          id='form1' 
-                          type='password' 
-                          className='custom-width-input'
-                          value = {user1.password}
-                          onChange= {onChange}
+                      <MDBCol md='8'>
+                        <MDBInput
+                          wrapperClass='mb-4'
+                          label='Password'
+                          id='loginPassword'
+                          type='password'
+                          name='password'
+                          value={user1.password}
+                          onChange={onChange}
                         />
-                        </MDBCol>
+                      </MDBCol>
                     </MDBRow>
                     <div className='d-flex justify-content-end'>
                       <MDBBtn className='w-30 mb-4 mt-2' size='md' type='submit' onClick={onSubmit1}>
-                          Login
+                        Login
                       </MDBBtn>
                     </div>
-                </div>
+                  </div>
                 )}
               </div>
             </MDBCardBody>
           </MDBCard>
         </MDBCol>
         <MDBCol md='6' className='text-center text-md-start d-flex flex-column justify-content-center'>
-          
           <p className='px-3' style={{ color: 'hsl(217, 10%, 50.8%)' }}>
             Embark on a cinematic journey with MovieDb, where 
             immersive experiences await at every click. Explore a world 
