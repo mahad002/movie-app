@@ -253,11 +253,11 @@ const ReviewBox = ({ id }) => {
                                 </button>
                             )}
                             {review.author === cookies.userInfo.username && (
-                                <div>
-                                    <button className='btnML btnEdit' onClick={() => handleEdit(review._id)}>
+                                <div className="button-container">
+                                    <button className="btnEdit" onClick={() => handleEdit(review._id)}>
                                         Edit
                                     </button>
-                                    <button className='btnML btnDelete' onClick={() => handleDelete(review._id)}>
+                                    <button className="btnDelete" onClick={() => handleDelete(review._id)}>
                                         Delete
                                     </button>
                                 </div>

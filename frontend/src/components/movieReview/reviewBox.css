@@ -164,8 +164,8 @@
 
 .button-container {
     display: flex;
-    justify-content: flex-end; /* Align buttons to the right */
-    gap: 10px; /* Adjust the gap between buttons */
+    justify-content: flex-end;
+    gap: 10px; 
 }
 
 .submit-button, .cancel-button {
@@ -181,5 +181,36 @@
 }
 
 .submit-button:focus, .cancel-button:focus {
+    outline: none; /* Remove outline on focus */
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; 
+}
+
+.btnEdit, .btnDelete {
+    padding: 4px 8px;
+    border-radius: 15px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btnEdit {
+    background-color: #007bff; /* Blue background color */
+}
+
+.btnDelete {
+    background-color: #ff201d; /* Red background color */
+}
+
+.btnEdit:hover, .btnDelete:hover {
+    background-color: #0056b3; /* Darker background color on hover */
+}
+
+.btnEdit:focus, .btnDelete:focus {
     outline: none; /* Remove outline on focus */
 }
