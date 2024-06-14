@@ -79,7 +79,7 @@ function MovieForm() {
     const placeholderUrl = 'https://via.placeholder.com/300x450';
 
     if (path?.[0] === '/') {
-        console.log('Path:', `${baseTMDBUrl}${path}`);
+        // console.log('Path:', `${baseTMDBUrl}${path}`);
         setTempLogo(`${baseTMDBUrl}${path}`);
         return `${baseTMDBUrl}${path}`;
     } else if (/\.(jpg|jpeg|png)$/.test(path)) {
@@ -94,7 +94,7 @@ function MovieForm() {
   
 
   useEffect(()=>{
-    console.log(movieData)
+    // console.log(movieData)
   
   },[movieData])
 
@@ -116,13 +116,13 @@ function MovieForm() {
       try {
         const res = await axios.post(`${BASE_URL}/upload/`, data);
         const imageUrl = res.data.links[0].toString();
-        console.log("Image uploaded successfully:", imageUrl);
+        // console.log("Image uploaded successfully:", imageUrl);
         const imageName = imageUrl.split('/').pop();
         if(pathToUpdate === 'logo_path'){
-          console.log('Logo uploaded successfully:', imageName)
+          // console.log('Logo uploaded successfully:', imageName)
           setNewProductionCompany(prevData => ({ ...prevData, logo_path: `${imageName}`,})); //${IMAGE_BASE_URL}+${imageUrl}
           getImagePath(imageName);
-          console.log('Temp Logo:', tempLogo);
+          // console.log('Temp Logo:', tempLogo);
         } else {
           setMovieData(prevData => ({
             ...prevData,
@@ -152,7 +152,7 @@ function MovieForm() {
     } else if (imageType == 'logo_path') {
       setNewProductionCompany(prevData => ({ ...prevData, logo_path: '' }));
       setTempLogo('');
-      console.log('Temp Logo:', tempLogo);
+      // console.log('Temp Logo:', tempLogo);
       console.log('Logo removed');
     }
   };
@@ -232,16 +232,13 @@ function MovieForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log('Name:', name, 'Value:', value);
     setNewProductionCompany((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleInputLogo = (e) => {
     const {value} = e.target;
-    console.log('Logo uploaded successfully:', value);
     setNewProductionCompany((prevData) => ({ ...prevData, logo_path: value }));
     getImagePath(value)
-    console.log('Temp Logo:', tempLogo);
   }
 
   const handleAddProductionCompany = () => {
@@ -433,7 +430,7 @@ function MovieForm() {
                               id='Adult' 
                               value={movieData.adult}
                               checked={movieData.adult} 
-                              onChange={() => {setMovieData(prevData => ({ ...prevData, adult: !prevData.adult })); console.log(movieData.adult)}} 
+                              onChange={() => {setMovieData(prevData => ({ ...prevData, adult: !prevData.adult }));}} 
                               className='m-2 mb-0 mt-0' 
                               inline 
                             />
