@@ -30,6 +30,8 @@ const Home = () => {
         }
     }
 
+
+
     useEffect(() => {
          getMovies();
     }, []);
@@ -78,9 +80,9 @@ const Home = () => {
                 </Carousel>)}
                 <div>
                     <div className='home-movies'>
-                        <MovieList id={'popular'}/>
-                        <MovieList id={'top_rated'}/>
-                        <MovieList id={'upcoming'}/>
+                        <MovieList id={'all'}/>
+                        {/* <MovieList id={'top_rated'}/>
+                        <MovieList id={'upcoming'}/> */}
                         {/* {popularMovies.map((movie) => (
                                 <Cards key={movie.id} movie={movie}/>
                             // <div className='movie' key={movie.id}>
@@ -104,19 +106,6 @@ const Home = () => {
             </div>
         </>
     );
-
-    // useEffect(() => {
-    //     fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${tmdb_api_key}&language=en-US&page=${1}`)
-    //         .then(res => res.json())
-    //         .then(data => console.log(data.results))
-    //         .catch(error => console.error('Error fetching data:', error));
-    // }, [tmdb_api_key]); 
-
-    // return (
-    //     <>
-    //         Home Page
-    //     </>
-    // );
 };
 
 export default Home;

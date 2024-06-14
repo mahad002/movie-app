@@ -1,5 +1,6 @@
 .reviewBox {
     margin-top: 20px;
+    width: 80%;
 }
 
 .list1 {
@@ -119,6 +120,9 @@
 /* Add Review Form Styles */
 .addReviewBox {
     margin-bottom: 20px;
+    padding: 40px;
+    padding-bottom:  0px;
+    width: 100%;
 }
 
 .addReviewBox h3 {

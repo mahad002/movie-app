@@ -12,11 +12,30 @@ const { ObjectId } = require('mongoose').Types;
 const tmdb_api_key = process.env.TMDB_API_KEY;
 const base_url = process.env.BASE_URL;
 
+router.get('/getAllMovies', async (req, res) => {
+    try {
+        const movies = await Movie.find();
+
+        if (!movies || movies.length === 0) {
+            return res.status(404).json({ error: 'No movies found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            movies: movies,
+        });
+    } catch (error) {
+        console.error('Error fetching all movies:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
-        const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${tmdb_api_key}&language=en-US`);
-        const movie = response.data;
+
+        // Search the movie in the local database
+        const movie = await Movie.findOne({ id: movieId });
 
         if (!movie) {
             return res.status(404).json({ error: 'Movie not found' });
@@ -177,31 +196,37 @@ router.get("/get/:id", async (req, res) => {
     }
 });
 
+// Endpoint to fetch movies by type and page
 router.get('/getMovies/:type', async (req, res) => {
     try {
         const type = req.params.type;
+        const page = req.query.page || 1; // Default page 1 if not specified
 
-        const typeResponse = await axios.get(`${base_url}/type/${type}`);
+        // Fetch movie IDs for the specified type and page
+        const typeResponse = await axios.get(`${base_url}/type/${type}?page=${page}`);
         const movieIds = typeResponse.data.movieIds;
 
         if (!movieIds || movieIds.length === 0) {
-            return res.status(404).json({ error: 'No movies found for the specified type' });
+            return res.status(404).json({ error: 'No movies found for the specified type and page' });
         }
 
-        const movies = [];
-
-        for (const movieId of movieIds) {
+        // Fetch details for each movie based on movie IDs
+        const moviesPromises = movieIds.map(async (movieId) => {
             const movieResponse = await axios.get(`${base_url}/movie/get/${movieId}`);
-            movies.push(movieResponse.data);
-        }
+            return movieResponse.data; // Assuming movieResponse.data contains the movie details
+        });
+
+        // Await all movie details requests and gather results
+        const movies = await Promise.all(moviesPromises);
 
         res.status(200).json({
             success: true,
             type: type,
+            page: page,
             movies: movies,
         });
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

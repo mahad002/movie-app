@@ -28,9 +28,9 @@ const processMovieData = (req, res, next) => {
       if (data.production_companies) {
         data.production_companies = data.production_companies.map(company => ({
           id: Number(company.id),
-          logoPath: company.logoPath,
+          logo_path: company.logo_path,
           name: company.name,
-          originCountry: company.originCountry
+          origin_country: company.origin_country
         }));
       }
   

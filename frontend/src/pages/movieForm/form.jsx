@@ -46,8 +46,8 @@ function MovieForm() {
     budget: null,
     genres: [],
     homepage: '',
-    imdbId: '',
-    production_companies: [], // 
+    imdb_id: '',
+    production_companies: [], 
     production_countries: [], //
     revenue: null,
     runtime: null,
@@ -69,9 +69,28 @@ function MovieForm() {
   const [newProductionCompany, setNewProductionCompany] = useState({
     id: '',
     name: '',
-    logoPath: '',
-    originCountry: '',
+    logo_path: '',
+    origin_country: '',
   });
+  const [tempLogo, setTempLogo] = useState('');
+
+  const getImagePath = (path) => {
+    const baseTMDBUrl = 'https://image.tmdb.org/t/p/original';
+    const placeholderUrl = 'https://via.placeholder.com/300x450';
+
+    if (path?.[0] === '/') {
+        console.log('Path:', `${baseTMDBUrl}${path}`);
+        setTempLogo(`${baseTMDBUrl}${path}`);
+        return `${baseTMDBUrl}${path}`;
+    } else if (/\.(jpg|jpeg|png)$/.test(path)) {
+        setTempLogo(`${IMAGE_BASE_URL}${path}`);
+        return `${IMAGE_BASE_URL}${path}`;
+    } 
+    // else {
+    //     setTempLogo(placeholderUrl);
+    //     return placeholderUrl;
+    // }
+};
   
 
   useEffect(()=>{
@@ -86,7 +105,7 @@ function MovieForm() {
       setBackdropSpinner(true);
     } else if (pathToUpdate === 'poster_path') {
       setPosterSpinner(true);
-    } else if (pathToUpdate === 'logoPath') {
+    } else if (pathToUpdate === 'logo_path') {
       setProductionSpinner(true);
     }
     console.log('Uploading image...');
@@ -99,9 +118,11 @@ function MovieForm() {
         const imageUrl = res.data.links[0].toString();
         console.log("Image uploaded successfully:", imageUrl);
         const imageName = imageUrl.split('/').pop();
-        if(pathToUpdate === 'logoPath'){
+        if(pathToUpdate === 'logo_path'){
           console.log('Logo uploaded successfully:', imageName)
-          setNewProductionCompany(prevData => ({ ...prevData, logoPath: `${imageName}` })); //${IMAGE_BASE_URL}+${imageUrl}
+          setNewProductionCompany(prevData => ({ ...prevData, logo_path: `${imageName}`,})); //${IMAGE_BASE_URL}+${imageUrl}
+          getImagePath(imageName);
+          console.log('Temp Logo:', tempLogo);
         } else {
           setMovieData(prevData => ({
             ...prevData,
@@ -116,7 +137,7 @@ function MovieForm() {
           setBackdropSpinner(false);
         } else if (pathToUpdate === 'poster_path') {
           setPosterSpinner(false);
-        } else if (pathToUpdate === 'logoPath') {
+        } else if (pathToUpdate === 'logo_path') {
           setProductionSpinner(false);
         }
       }
@@ -128,8 +149,10 @@ function MovieForm() {
       setMovieData(prevData => ({ ...prevData, backdrop_path: '' }));
     } else if (imageType === 'poster') {
       setMovieData(prevData => ({ ...prevData, poster_path: '' }));
-    } else if (imageType == 'logoPath') {
-      setNewProductionCompany(prevData => ({ ...prevData, logoPath: '' }));
+    } else if (imageType == 'logo_path') {
+      setNewProductionCompany(prevData => ({ ...prevData, logo_path: '' }));
+      setTempLogo('');
+      console.log('Temp Logo:', tempLogo);
       console.log('Logo removed');
     }
   };
@@ -209,8 +232,17 @@ function MovieForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log('Name:', name, 'Value:', value);
     setNewProductionCompany((prevData) => ({ ...prevData, [name]: value }));
   };
+
+  const handleInputLogo = (e) => {
+    const {value} = e.target;
+    console.log('Logo uploaded successfully:', value);
+    setNewProductionCompany((prevData) => ({ ...prevData, logo_path: value }));
+    getImagePath(value)
+    console.log('Temp Logo:', tempLogo);
+  }
 
   const handleAddProductionCompany = () => {
     console.log(newProductionCompany)
@@ -227,9 +259,10 @@ function MovieForm() {
         setNewProductionCompany({
           id: '',
           name: '',
-          logoPath: '',
-          originCountry: '',
+          logo_path: '',
+          origin_country: '',
         });
+        setTempLogo('');
       } else {
         console.log('Production Company with the same name already exists!');
         setCompanyMessage('Production Company with the same name already exists!');
@@ -272,6 +305,36 @@ function MovieForm() {
       });
       if (response.status === 200) {
         console.log('Movie data uploaded successfully:', response.data);
+        movieData = {
+          id: null,
+          title: '',
+          description: '',
+          release_date: '',
+          backdrop_path: '',
+          poster_path: '',
+          adult: false,
+          genreIds: [],
+          original_language: '',
+          original_title: '',
+          overview: '',
+          popularity: null,
+          video: false,
+          vote_average: null,
+          vote_count: null,
+          belongsToCollection: {},
+          budget: null,
+          genres: [],
+          homepage: '',
+          imdb_id: '',
+          production_companies: [],
+          production_countries: [],
+          revenue: null,
+          runtime: null,
+          spokenLanguages: [],
+          status: '',
+          tagline: '',
+          reviews: []
+        };
       } else {
         console.error('Failed to upload movie data:', response.data);
       }
@@ -499,9 +562,9 @@ function MovieForm() {
                           <MDBInput
                             wrapperClass='mb-4'
                             label="IMDB ID"
-                            name="imdbId"
-                            value={movieData.imdbId}
-                            onChange={(e) => setMovieData(prevData => ({ ...prevData, imdbId: e.target.value }))}
+                            name="imdb_id"
+                            value={movieData.imdb_id}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, imdb_id: e.target.value }))}
                           />
                         </MDBCol>
                       </MDBRow>
@@ -678,8 +741,8 @@ function MovieForm() {
                               <div key={index} className="genre-item text-black d-flex align-items-center">
                                 <span className="genre-id me-2">ID: {company.id}</span>
                                 <span className="genre-name me-2">Name: {company.name}</span>
-                                <span className="genre-name me-2">Origin Country: {company.originCountry}</span>
-                                <img src={`${IMAGE_BASE_URL}${company.logoPath}`} alt={company.name} className="me-2" style={{ width: '50px', height: '50px' }} />
+                                <span className="genre-name me-2">Origin Country: {company.origin_country}</span>
+                                <img src={tempLogo} alt={company.name} className="me-2" style={{ width: '50px', height: '50px' }} />
                                 <button className="btn btn-danger remove-genre-btn" onClick={() => handleRemove(index)}>
                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -707,17 +770,17 @@ function MovieForm() {
                             />
                             <MDBInput
                               label="Logo Path"
-                              // type="text"
-                              name="logoPath"
-                              value={newProductionCompany.logoPath}
-                              onChange={handleInputChange}
+                              type="text"
+                              name="logo_path"
+                              value={newProductionCompany.logo_path}
+                              onChange={handleInputLogo}
                               className="me-2 genre-input-name"
                             />
                             <MDBInput
                               label="Origin Country"
                               type="text"
-                              name="originCountry"
-                              value={newProductionCompany.originCountry}
+                              name="origin_country"
+                              value={newProductionCompany.origin_country}
                               onChange={handleInputChange}
                               className="me-2 genre-input-name"
                             />
@@ -735,15 +798,15 @@ function MovieForm() {
                       <div className="image-div">
                           <div>
                               {/* Production Logo Image */}
-                              {!!newProductionCompany.logoPath && (
+                              {!!newProductionCompany.logo_path && (
                                 <div className="relative">
                                   <div className='image-container'>
-                                    <button className="remove-button" onClick={() => removeImage('logoPath')}>
+                                    <button className="remove-button" onClick={() => removeImage('logo_path')}>
                                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 bg-red-600 rounded-lg p-1">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                       </svg> 
                                     </button>
-                                    <img src={`${IMAGE_BASE_URL}${newProductionCompany?.logoPath}`} className="w-full h-full object-cover" alt="" />
+                                    <img src={`${tempLogo}`} className="w-full h-full object-cover" alt="" />
                                   </div>
                                 </div>
                               )}
@@ -773,7 +836,7 @@ function MovieForm() {
                                   />
                                 </svg>
                                 <div className="add-text">Add Production Logo</div>
-                                <input id="upload-logo-input" type="file" onChange={(ev) => uploadImage(ev, 'logoPath')} className="custom-file-input" />
+                                <input id="upload-logo-input" type="file" onChange={(ev) => uploadImage(ev, 'logo_path')} className="custom-file-input" />
                               </label>
                               </div>
                           </div>
