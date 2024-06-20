@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { useCookies } from 'react-cookie';
 import { Link } from "react-router-dom";
