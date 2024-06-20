@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import './reviewBox.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
