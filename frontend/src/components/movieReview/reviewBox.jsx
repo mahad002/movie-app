@@ -4,7 +4,6 @@ import axios from 'axios';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useCookies } from 'react-cookie';
 
-// eslint-disable-next-line react/prop-types
 const ReviewBox = ({ id }) => {
     const [reviews, setReviews] = useState([]);
     const [userReview, setUserReview] = useState(null);
@@ -83,10 +82,6 @@ const ReviewBox = ({ id }) => {
 
             let endpoint = `${BASE_URL}/movie/review/${id}`;
 
-            // if (userReview) {
-            //     endpoint = `${BASE_URL}/review/${userReview._id}`;
-            // }
-
             const res = await axios.post(
                 endpoint,
                 reviewData,
@@ -133,7 +128,6 @@ const ReviewBox = ({ id }) => {
                     }
                 }
             };
-            
 
             const res = await axios.patch(
                 `${BASE_URL}/review/${userReview._id}`,
@@ -157,7 +151,7 @@ const ReviewBox = ({ id }) => {
 
     // Function to handle edit button click
     const handleEdit = (reviewId) => {
-        if(isEditModalOpen) {
+        if (isEditModalOpen) {
             setIsEditModalOpen(false);
         } else {
             setIsEditModalOpen(true);
@@ -167,13 +161,20 @@ const ReviewBox = ({ id }) => {
 
     // Function to handle delete button click
     const handleDelete = async (reviewId) => {
+        console.log('Deleting review...');
+        console.log('Review ID:', reviewId);
+        console.log('Movie ID:', id);
+        console.log('User ID:', cookies?.userInfo?._id);
         try {
             const res = await axios.delete(
                 `${BASE_URL}/review/${reviewId}`,
                 {
-                    body: { reviewId, movieId: id, userId: cookies.userInfo._id },
                     headers: {
-                        Authorization: `Bearer ${cookies.userToken}`
+                        Authorization: `Bearer ${cookies?.userToken}`
+                    },
+                    params: {
+                        userId: cookies?.userInfo?._id,
+                        movieId: id
                     }
                 }
             );
@@ -193,37 +194,37 @@ const ReviewBox = ({ id }) => {
 
     return (
         <div className='reviewBox'>
-            {/* Add/Edit Review Section */}
-            <div className='addReviewBox'>
-                <h3>Add Your Review</h3>
-                {message && <p>{message}</p>}
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Rating:</label>
-                        <input 
-                            type="number" 
-                            value={rating} 
-                            onChange={(e) => setRating(e.target.value)} 
-                            min="1" 
-                            max="10" 
-                            required 
-                        />
-                    </div>
-                    <div>
-                        <label>Comment:</label>
-                        <textarea 
-                            value={comment} 
-                            onChange={(e) => setComment(e.target.value)} 
-                            required 
-                        />
-                    </div>
-                    <div className="button-container">
-                        <button type="submit">Submit Review</button>
-                    </div>
-                </form>
-            </div>
+            {cookies.userInfo && (
+                <div className='addReviewBox'>
+                    <h3>Add Your Review</h3>
+                    {message && <p>{message}</p>}
+                    <form onSubmit={handleSubmit}>
+                        <div>
+                            <label>Rating:</label>
+                            <input
+                                type="number"
+                                value={rating}
+                                onChange={(e) => setRating(e.target.value)}
+                                min="1"
+                                max="10"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label>Comment:</label>
+                            <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="button-container">
+                            <button type="submit">Submit Review</button>
+                        </div>
+                    </form>
+                </div>
+            )}
 
-            {/* Reviews List Section */}
             <div className='list1'>
                 {reviews.map((review, index) => (
                     <div key={review._id} className='comment'>
@@ -252,7 +253,7 @@ const ReviewBox = ({ id }) => {
                                     See less <FaChevronUp />
                                 </button>
                             )}
-                            {review.author === cookies.userInfo.username && (
+                            {(review.author === cookies?.userInfo?.username || cookies?.userInfo?.role === 'admin') && (
                                 <div className="button-container">
                                     <button className="btnEdit" onClick={() => handleEdit(review._id)}>
                                         Edit
@@ -267,30 +268,29 @@ const ReviewBox = ({ id }) => {
                 ))}
             </div>
 
-            {/* Edit Modal */}
             {isEditModalOpen && (
                 <div className="addReviewBox">
                     <h3>Edit Your Review</h3>
                     <form onSubmit={handleSubmitEdit}>
                         <div>
                             <label>Rating:</label>
-                            <input 
-                                type="number" 
-                                value={editRating} 
-                                onChange={(e) => setEditRating(e.target.value)} 
-                                min="1" 
-                                max="10" 
-                                required 
-                                className="rating-input"  // Using the same class as the Add Review section
+                            <input
+                                type="number"
+                                value={editRating}
+                                onChange={(e) => setEditRating(e.target.value)}
+                                min="1"
+                                max="10"
+                                required
+                                className="rating-input"
                             />
                         </div>
                         <div>
                             <label>Comment:</label>
-                            <textarea 
-                                value={editComment} 
-                                onChange={(e) => setEditComment(e.target.value)} 
-                                required 
-                                className="comment-textarea"  // Using the same class as the Add Review section
+                            <textarea
+                                value={editComment}
+                                onChange={(e) => setEditComment(e.target.value)}
+                                required
+                                className="comment-textarea"
                             />
                         </div>
                         <div className="button-container">

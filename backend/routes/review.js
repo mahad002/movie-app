@@ -114,8 +114,9 @@ router.patch('/:id', getReview, async (req, res) => {
 // Endpoint to delete a review by ID
 router.delete('/:id', async (req, res) => {
     const reviewId = req.params.id;
-    let { userId, movieId } = req.body;
-    userId = new ObjectId(userId);
+    let { userId, movieId } = req.query; // Use query instead of body
+    // userId = new ObjectId(userId);
+    console.log('userId:', userId);
     movieId = Number(movieId);
     console.log('Deleting review:', reviewId);
 
@@ -140,8 +141,7 @@ router.delete('/:id', async (req, res) => {
             movie.reviews.pull(reviewId);
             await movie.save();
             console.log('Updated movie:', movie.reviews);
-        }
-        else {
+        } else {
             console.log('Movie not found');
         }
 
@@ -158,5 +158,6 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 module.exports = router;
