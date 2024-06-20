@@ -2,6 +2,7 @@ import { useState,useEffect } from 'react';
 // import AuthServices from '../../services/AuthServices';
 // import { AuthContext } from '../../Context/AuthContext';
 import Message from '../../components/Message';
+import { useCookies } from 'react-cookie';
 // import { useNavigate } from 'react-router-dom';
 // import DatePicker from 'react-datepicker';
 import {
@@ -73,6 +74,8 @@ function MovieForm() {
     origin_country: '',
   });
   const [tempLogo, setTempLogo] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [cookies] = useCookies(['userToken']);
 
   const getImagePath = (path) => {
     const baseTMDBUrl = 'https://image.tmdb.org/t/p/original';
@@ -94,9 +97,16 @@ function MovieForm() {
   
 
   useEffect(()=>{
-    // console.log(movieData)
-  
-  },[movieData])
+    const userRole = cookies?.userInfo?.role;
+    console.log('User Role:', userRole);
+    if (userRole === 'admin') {
+      setIsAdmin(true);
+    } 
+  },[])
+
+  if (!isAdmin) {
+    return <h1 className='my-3 display-3 fw-bold ls-tight px-3 align-items-center text-primary'>Page Not Found</h1>;
+  }
 
   const uploadImage = async (ev, pathToUpdate) => {
     
@@ -384,7 +394,7 @@ function MovieForm() {
                         </MDBCol>
                         </MDBRow>
                         <MDBCol col='6'>
-                          <MDBInput
+                          {/* <MDBInput
                             wrapperClass='mb-4'
                             label='Title'
                             id='title'
@@ -392,6 +402,13 @@ function MovieForm() {
                             name='title'
                             value={movieData.title}
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, title: e.target.value }))}
+                          /> */}
+                          <MDBInput
+                            wrapperClass='mb-4'
+                            label="Original Title"
+                            name="original_title"
+                            value={movieData.original_title}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, original_title: e.target.value }))}
                           />
                         </MDBCol>
                         <MDBCol>
@@ -410,15 +427,23 @@ function MovieForm() {
                         </MDBCol>
                       </MDBRow>
                       <MDBCol col='6'>
+                          {/* // <MDBInput
+                          //   wrapperClass='mb-4'
+                          //   label='Description'
+                          //   id='description'
+                          //   icon= 'pen'
+                          //   type='textarea'
+                          //   name='description'
+                          //   value={movieData.description}
+                          //   onChange={(e) => setMovieData(prevData => ({ ...prevData, description: e.target.value }))}
+                          // /> */}
                           <MDBInput
                             wrapperClass='mb-4'
-                            label='Description'
-                            id='description'
-                            icon= 'pen'
-                            type='textarea'
-                            name='description'
-                            value={movieData.description}
-                            onChange={(e) => setMovieData(prevData => ({ ...prevData, description: e.target.value }))}
+                            label="Overview"
+                            type="textarea"
+                            name="overview"
+                            value={movieData.overview}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, overview: e.target.value }))}
                           />
                         </MDBCol>
                       <MDBRow className='flex-row'>
@@ -464,20 +489,27 @@ function MovieForm() {
                             value={movieData.original_language}
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, original_language: e.target.value }))}
                           />
-                          <MDBInput
+                          {/* <MDBInput
                             wrapperClass='mb-4'
                             label="Original Title"
                             name="original_title"
                             value={movieData.original_title}
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, original_title: e.target.value }))}
-                          />
-                          <MDBInput
+                          /> */}
+                          {/* <MDBInput
                             wrapperClass='mb-4'
                             label="Overview"
                             type="textarea"
                             name="overview"
                             value={movieData.overview}
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, overview: e.target.value }))}
+                          /> */}
+                          <MDBInput
+                            wrapperClass='mb-4'
+                            label="Status"
+                            name="status"
+                            value={movieData.status}
+                            onChange={(e) => setMovieData(prevData => ({ ...prevData, status: e.target.value }))}
                           />
                           <MDBInput
                             wrapperClass='mb-4'
@@ -505,13 +537,13 @@ function MovieForm() {
                             value={movieData.runtime}
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, runtime: e.target.value }))}
                           />
-                          <MDBInput
+                          {/* <MDBInput
                             wrapperClass='mb-4'
                             label="Status"
                             name="status"
                             value={movieData.status}
                             onChange={(e) => setMovieData(prevData => ({ ...prevData, status: e.target.value }))}
-                          />
+                          /> */}
                           <MDBInput
                             wrapperClass='mb-4'
                             label="Tagline"

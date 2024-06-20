@@ -207,7 +207,7 @@ router.get('/getMovies/:type', async (req, res) => {
         const movieIds = typeResponse.data.movieIds;
 
         if (!movieIds || movieIds.length === 0) {
-            return res.status(404).json({ error: 'No movies found for the specified type and page' });
+            return res.status(404).json({ message: 'No more movies found for the specified type and page' });
         }
 
         // Fetch details for each movie based on movie IDs

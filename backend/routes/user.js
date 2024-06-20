@@ -162,6 +162,23 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Logout Route
+router.post('/logout', UserAuth, async (req, res) => {
+    try {
+      const user = req.user;
+  
+      // Clear the token from user document
+      user.token = '';
+      await user.save();
+  
+      res.clearCookie('userToken'); // Clear cookie on client side
+      res.json({ success: true, message: 'Logged out successfully.' });
+    } catch (error) {
+      console.error('Logout error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
 router.put('/update-username', UserAuth, async (req, res) => {
     try {
         // Check if the user has changed the username within the last 2 days

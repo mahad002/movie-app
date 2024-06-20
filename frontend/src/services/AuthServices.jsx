@@ -27,7 +27,7 @@ export default {
   login: async (user) => {
     try {
       const res = await instance.post('/user/login', user);
-      console.log("res.data: ", res.data);
+      // console.log("res.data: ", res.data);
       if (res.data && res.data.token) {
         localStorage.setItem('userToken', res.data.token); // Store the authentication token in localStorage
         setCookie('userToken', res.data.token, 7); // Store the authentication token in a cookie for 7 days
@@ -43,7 +43,7 @@ export default {
     }
   },
   register: async user => {
-    console.log(user);
+    // console.log(user);
     try {
       const res = await instance.post('/user/signup', user);
       return res.data;
