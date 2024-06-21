@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import './login-register.css';
 import { useState, useRef, useEffect, useContext } from 'react';
 import AuthServices from '../../services/AuthServices';
