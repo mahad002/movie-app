@@ -9,3 +9,7 @@
 
 # Ignore docker-compose.yml
 docker-compose.yml
+
+# Ignore Dockerfiles in frontend and backend directories
+/frontend/Dockerfile
+/backend/Dockerfile
