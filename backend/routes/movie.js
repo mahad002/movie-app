@@ -231,23 +231,23 @@ router.get('/getMovies/:type', async (req, res) => {
     }
 });
 
-router.post('/getAllMovies', async (req, res) => {
-    try {
-        const movies = await Movie.find();
+// router.post('/getAllMovies', async (req, res) => {
+//     try {
+//         const movies = await Movie.find();
 
-        if (!movies || movies.length === 0) {
-            return res.status(404).json({ error: 'No movies found' });
-        }
+//         if (!movies || movies.length === 0) {
+//             return res.status(404).json({ error: 'No movies found' });
+//         }
 
-        res.status(200).json({
-            success: true,
-            movies: movies,
-        });
-    } catch (error) {
-        console.error('Error Hello:', error);
-        res.status(500).json({ error: 'Mahad Server Error' });
-    }
-});
+//         res.status(200).json({
+//             success: true,
+//             movies: movies,
+//         });
+//     } catch (error) {
+//         console.error('Error Hello:', error);
+//         res.status(500).json({ error: 'Mahad Server Error' });
+//     }
+// });
 
 
 router.post('/review/:movieId', UserAuth, async (req, res) => {
