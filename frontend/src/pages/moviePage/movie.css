@@ -255,6 +255,28 @@
     padding: 1rem;
 }
 
+.movie__production {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next line */
+    gap: 10px; /* Space between items */
+    justify-content: center; /* Center-aligns items */
+}
+
+.productionCompanyImage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 150px; /* Adjust as needed for your design */
+    margin: 10px; /* Adds space around each company */
+}
+
+.movie__productionCompany {
+    max-width: 100%; /* Ensures images don't exceed their container */
+    height: auto;
+    margin-bottom: 10px; /* Space between image and name */
+}
+
+
 @media screen and (max-width: 768px) {
     .movie__backdrop{
         height: 250px;
