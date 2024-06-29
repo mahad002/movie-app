@@ -113,4 +113,29 @@
     font-size: 1.5rem;
     margin: 20px;
   }
-  
+
+  @media (min-width: 768px) {
+    .loadMoreCard {
+        width: 200px;
+        height: 300px;
+    }
+    .loadMoreCard__plus {
+        font-size: 2rem;
+    }
+    .loadMoreCard__text {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .loadMoreCard {
+        width: 100px;
+        height: 150px;
+    }
+    .loadMoreCard__plus {
+        font-size: 1rem;
+    }
+    .loadMoreCard__text {
+        font-size: 0.75rem;
+    }
+}
